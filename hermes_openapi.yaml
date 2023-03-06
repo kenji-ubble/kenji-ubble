@@ -1,0 +1,356 @@
+openapi: 3.0.3
+info:
+  title: Hermes - the identity verification API
+  description: |-
+    Hermes is the identification 
+  version: 2.0.0
+externalDocs:
+  description: Hermes API concepts
+  url: https://ubbleai.atlassian.net/wiki/spaces/PRODUCT/pages/714933113/How+do+we+want+to+structure+our+data+about+an+identity+verification
+servers:
+  - url: https://api.ubble.ai/v2/
+tags:
+  - name: identity verifications
+    description: An identity verification service.
+    externalDocs:
+      description: Find out more
+      url: https://ubble.ai
+  - name: applicants
+    description: Applicant management
+    externalDocs:
+      description: Find out more
+      url: https://ubble.ai
+paths:
+  /identity-verifications/:
+    post:
+      tags:
+        - identity verifications
+      summary: Create an identity verification
+      description: Create an identity verification.
+      operationId: create_identity_verification
+      requestBody:
+        description: Create an identity verification
+        required: true
+        content:
+          application/json:
+            examples:
+              Creating a new applicant :
+                value:
+                  configuration: 987
+                  applicant:
+                    external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+                    phone: '+12068133616'
+                    email: david.vincent@courriel.ml
+                    declared_data:
+                      first_name: David
+                      last_name: Vincent
+                      married_name: Vincent
+                      gender: M
+                      birth_date: 1934-10-02
+                      nationality: US
+                      birth_place_country: US
+                      address:
+                        address_line1: 4022 Laguna St
+                        address_line2: Flat 456
+                        city: Santa Barbara
+                        zip: 93101
+                        country: US
+              From applicant_id reference:
+                value:
+                  configuration: 875
+                  applicant:
+                      id: apl_tkoi5db4hryu5cei5vwoabr7we
+            schema:
+              $ref: '#/components/schemas/IdentityVerificationRequestBody'
+      responses:
+        '201':
+          description: Identity verification created
+          content:
+            application/json:
+              examples:
+                with_attempt_link:
+                  value:
+                    {
+                      "id": "idv_tkoi5db4hryu5cei5vwoabr7we",
+                      "status": "pending",
+                      "configuration": 572,
+                      "applicant_id": "apl_tkoi5db4hryu5cei5vwoabr7we",
+                      "last_attempt":
+                      {
+                        "state": "pending",
+                        "link": "https://id.ubble.ai/4hryu5cei5/"
+                      },
+                      "_links":
+                      {
+                        "self": "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
+                      }
+                    }
+              schema:
+                $ref: '#/components/schemas/IdentityVerificationResponse'
+        '405':
+          description: Invalid input
+
+  /applicants/:
+    post:
+      tags:
+        - applicants
+      summary: Create an Applicant
+      description: Returns a single Applicant
+      operationId: create_applicant
+      requestBody:
+        description: Create an identity verification
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Applicant'
+            examples:
+              With_all_possible_data:
+                value:
+                  external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+                  phone: '+12068133616'
+                  email: david.vincent@courriel.ml
+                  declared_data:
+                    first_name: David
+                    last_name: Vincent
+                    married_name: Vincent
+                    gender: M
+                    birth_date: 1934-10-02
+                    nationality: US
+                    birth_place_country: US
+                    address:
+                      address_line1: 4022 Laguna St
+                      address_line2: Flat 456
+                      city: Santa Barbara
+                      zip: 93101
+                      country: US
+      responses:
+        '201':
+          description: Applicant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+
+  /applicants/{applicant_id}/:
+    get:
+      tags:
+        - applicants
+      summary: Find an Applicant by ID
+      description: Returns a single Applicant
+      operationId: get_applicant_by_id
+      parameters:
+        - name: applicant_id
+          required: true
+          in: path
+          description: ID of Applicant to return
+          schema:
+            $ref: '#/components/schemas/ApplicantId'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Applicant not found
+
+components:
+  examples:
+    address_example_american:
+      value:
+        address_line1: 4022 Laguna St
+        address_line2: Flat 456
+        city: Santa Barbara
+        zip: 93101
+        country: US
+
+  schemas:
+    IdentityVerificationRequestBody:
+      type: object
+      required: [configuration]
+      properties:
+        configuration:
+          type: integer
+          description: Configuration id.
+          example: 572
+        applicant:
+          $ref: '#/components/schemas/Applicant'
+  
+    IdentityVerificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: IdentityVerification unique identifier.
+          example: idv_tkoi5db4hryu5cei5vwoabr7we
+        status:
+          $ref: '#/components/schemas/IdentityVerificationStatues'
+        reason_codes:
+          type: array
+          items:
+            type: integer
+          example: [1001, 2006]
+        configuration:
+          type: integer
+          description: Configuration id.
+          example: 572
+        applicant_id:
+          $ref: '#/components/schemas/ApplicantId'
+        last_attempt:
+          $ref: '#/components/schemas/Attempt'
+        _links:
+          $ref: '#/components/schemas/Links'
+
+    Applicant:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicantId'
+        external_applicant_id:
+          type: string
+          example: 'ext_osdfdfdb4hryu5cei5vwoabrk5k'
+        phone:
+          type: string
+          format: phone
+          example: '+12068133616'
+        email:
+          type: string
+          format: email
+          example: david.vincent@courriel.ml
+        declared_data:
+          $ref: '#/components/schemas/DeclaredData'
+        _links:
+          $ref: '#/components/schemas/Links'
+
+
+    Attempt:
+      type: object
+      properties:
+        state:
+          $ref: "#/components/schemas/AttemptStates"
+        link:
+          type: string
+          format: uri
+          example: https://id.ubble.ai/4hryu5cei5/
+
+    DeclaredData:
+      type: object
+      required: [first_name, last_name]
+      properties:
+        first_name:
+          type: string
+          example: David
+        last_name:
+          type: string
+          example: Vincent
+        married_name:
+          type: string
+          example: Vincent
+        gender:
+          $ref: '#/components/schemas/Genders'
+        birth_date:
+          type: string
+          format: date
+          example: 1934-10-02
+        nationality:
+          $ref: '#/components/schemas/CountryCode'
+        birth_place_country:
+          $ref: '#/components/schemas/CountryCode'
+        address:
+          $ref: '#/components/schemas/Address'
+
+    IdentityVerificationStatues:
+      type: string
+      description: Status of the identity verification.
+      enum:
+        - pending
+        - in_progress
+        - approved
+        - declined
+        - new_capture_required
+
+    AttemptStates:
+      type: string
+      description: States of an attempt.
+      enum:
+        - pending
+        - capture_in_progress
+        - checks_in_progress
+        - completed
+        - expired
+        - capture_aborted
+        - checks_aborted
+
+    ApplicantId:
+      type: string
+      description: Applicant unique identifier.
+      example: apl_tkoi5db4hryu5cei5vwoabr7we
+
+    Address:
+      type: object
+      description: Postal address.
+      required: [address_line1, city, zip, country]
+      properties:
+        address_line1:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: 4022 Laguna St
+        address_line2:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Flat 456
+        city:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Santa Barbara
+        zip:
+          type: string
+          minLength: 2
+          maxLength: 20
+          example: 93101
+        country:
+          $ref: '#/components/schemas/CountryCode'
+
+    CountryCode:
+      type: string
+      format: ISO 3166-1 alpha-2
+      example: US
+
+    Genders:
+      type: string
+      description: Person gender.
+      example: M
+      enum:
+        - M
+        - F
+
+    Links:
+      type: object
+      properties:
+        self:
+          type: string
+          format: uri
+          example: https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we
+
+  requestBodies:
+    IdentityVerificationRequestBody:
+      description: Identity verification request body.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentityVerificationRequestBody'
+  responses:
+    IdentityVerificationOutput:
+      description: Identity verification response.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentityVerificationResponse'

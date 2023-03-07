@@ -34,7 +34,7 @@ paths:
         content:
           application/json:
             examples:
-              Creating a new applicant :
+              Creating a new IdentityVerification :
                 value:
                   configuration: 987
                   applicant:
@@ -68,25 +68,10 @@ paths:
           content:
             application/json:
               examples:
-                with_attempt_link:
-                  value:
-                    {
-                      "id": "idv_tkoi5db4hryu5cei5vwoabr7we",
-                      "status": "pending",
-                      "configuration": 572,
-                      "applicant_id": "apl_tkoi5db4hryu5cei5vwoabr7we",
-                      "last_attempt":
-                      {
-                        "state": "pending",
-                        "link": "https://id.ubble.ai/4hryu5cei5/"
-                      },
-                      "_links":
-                      {
-                        "self": "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
-                      }
-                    }
+                identity_verification_creation_response:
+                  $ref: '#/components/examples/identity_verification_creation_response'
               schema:
-                $ref: '#/components/schemas/IdentityVerificationResponse'
+                $ref: '#/components/schemas/IdentityVerificationCreationResponse'
         '405':
           description: Invalid input
 
@@ -132,6 +117,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Applicant'
 
+  /applicants/{applicant_id}/identity-verifications/:
+    post:
+      tags:
+        - identity verifications
+      responses:
+        '201':
+          description: Applicant created
+          content:
+            application/json:
+              examples:
+                identity_verification_creation_response:
+                  $ref: '#/components/examples/identity_verification_creation_response'
+              schema:
+                $ref: '#/components/schemas/IdentityVerificationCreationResponse'
+
   /applicants/{applicant_id}/:
     get:
       tags:
@@ -160,6 +160,19 @@ paths:
 
 components:
   examples:
+    identity_verification_creation_response:
+      value:
+        id: idv_tkoi5db4hryu5cei5vwoabr7we
+        _links:
+          self:
+            href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
+          applicant:
+            href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
+          active_attempt_link:
+            href: "https://id.ubble.ai/4hryu5cei5/"
+          Attempts:
+            href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we/attempts/"
+  
     address_example_american:
       value:
         address_line1: 4022 Laguna St
@@ -180,7 +193,7 @@ components:
         applicant:
           $ref: '#/components/schemas/Applicant'
   
-    IdentityVerificationResponse:
+    IdentityVerificationCreationResponse:
       type: object
       properties:
         id:
@@ -353,4 +366,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IdentityVerificationResponse'
+            $ref: '#/components/schemas/IdentityVerificationCreationResponse'

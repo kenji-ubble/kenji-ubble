@@ -1,14 +1,18 @@
 openapi: 3.0.3
+
 info:
   title: Hermes - the identity verification API
   description: |-
-    Hermes is the identification 
+    Hermes is the identification
   version: 2.0.0
+
 externalDocs:
   description: Hermes API concepts
   url: https://ubbleai.atlassian.net/wiki/spaces/PRODUCT/pages/714933113/How+do+we+want+to+structure+our+data+about+an+identity+verification
+
 servers:
   - url: https://api.ubble.ai/v2/
+
 tags:
   - name: identity verifications
     description: An identity verification service.
@@ -20,6 +24,7 @@ tags:
     externalDocs:
       description: Find out more
       url: https://ubble.ai
+
 paths:
   /identity-verifications/:
     post:
@@ -34,45 +39,23 @@ paths:
         content:
           application/json:
             examples:
-              Creating a new IdentityVerification :
-                value:
-                  configuration: 987
-                  applicant:
-                    external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-                    phone: '+12068133616'
-                    email: david.vincent@courriel.ml
-                    declared_data:
-                      first_name: David
-                      last_name: Vincent
-                      married_name: Vincent
-                      gender: M
-                      birth_date: 1934-10-02
-                      nationality: US
-                      birth_place_country: US
-                      address:
-                        address_line1: 4022 Laguna St
-                        address_line2: Flat 456
-                        city: Santa Barbara
-                        zip: 93101
-                        country: US
-              From applicant_id reference:
-                value:
-                  configuration: 875
-                  applicant:
-                      id: apl_tkoi5db4hryu5cei5vwoabr7we
+              Only required data:
+                $ref: "#/components/examples/identity_verification_creation_request_body_min"
+              All possible data:
+                $ref: "#/components/examples/identity_verification_creation_request_body_max"
             schema:
-              $ref: '#/components/schemas/IdentityVerificationRequestBody'
+              $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
       responses:
-        '201':
+        "201":
           description: Identity verification created
           content:
             application/json:
               examples:
-                identity_verification_creation_response:
-                  $ref: '#/components/examples/identity_verification_creation_response'
+                identity_verification_creation_response_body:
+                  $ref: "#/components/examples/identity_verification_creation_response_body"
               schema:
-                $ref: '#/components/schemas/IdentityVerificationCreationResponse'
-        '405':
+                $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
+        "405":
           description: Invalid input
 
   /applicants/:
@@ -80,20 +63,25 @@ paths:
       tags:
         - applicants
       summary: Create an Applicant
-      description: Returns a single Applicant
+      description: Create an Applicant
       operationId: create_applicant
       requestBody:
-        description: Create an identity verification
+        description: Create an Applicant
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Applicant'
+              $ref: "#/components/schemas/ApplicantCreationRequestBody"
             examples:
-              With_all_possible_data:
+              Only required data:
+                value:
+                  declared_data:
+                    first_name: David
+                    last_name: Vincent
+              All possible data:
                 value:
                   external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-                  phone: '+12068133616'
+                  phone: "+12068133616"
                   email: david.vincent@courriel.ml
                   declared_data:
                     first_name: David
@@ -110,27 +98,27 @@ paths:
                       zip: 93101
                       country: US
       responses:
-        '201':
+        "201":
           description: Applicant created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Applicant'
+                $ref: "#/components/schemas/Applicant"
 
   /applicants/{applicant_id}/identity-verifications/:
     post:
       tags:
         - identity verifications
       responses:
-        '201':
+        "201":
           description: Applicant created
           content:
             application/json:
               examples:
-                identity_verification_creation_response:
-                  $ref: '#/components/examples/identity_verification_creation_response'
+                identity_verification_creation_response_body:
+                  $ref: "#/components/examples/identity_verification_creation_response_body"
               schema:
-                $ref: '#/components/schemas/IdentityVerificationCreationResponse'
+                $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
 
   /applicants/{applicant_id}/:
     get:
@@ -145,22 +133,55 @@ paths:
           in: path
           description: ID of Applicant to return
           schema:
-            $ref: '#/components/schemas/ApplicantId'
+            $ref: "#/components/schemas/ApplicantId"
       responses:
-        '200':
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Applicant'          
-        '400':
+                $ref: "#/components/schemas/Applicant"
+        "400":
           description: Invalid ID supplied
-        '404':
+        "404":
           description: Applicant not found
 
 components:
   examples:
-    identity_verification_creation_response:
+    identity_verification_creation_request_body_max:
+      value:
+        configuration: 987
+        applicant:
+          external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+          phone: "+12068133616"
+          email: david.vincent@courriel.ml
+          declared_data:
+            first_name: David
+            last_name: Vincent
+            married_name: Vincent
+            gender: M
+            birth_date: 1934-10-02
+            nationality: US
+            birth_place_country: US
+            address:
+              address_line1: 4022 Laguna St
+              address_line2: Flat 456
+              city: Santa Barbara
+              zip: 93101
+              country: US
+    identity_verification_creation_request_body_min:
+      value:
+        configuration: 987
+        applicant:
+          declared_data:
+            first_name: David
+            last_name: Vincent
+
+    applicant_identity_verification_creation_request_body_max:
+      value:
+        configuration: 478
+
+    identity_verification_creation_response_body:
       value:
         id: idv_tkoi5db4hryu5cei5vwoabr7we
         _links:
@@ -170,9 +191,9 @@ components:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
           active_attempt_link:
             href: "https://id.ubble.ai/4hryu5cei5/"
-          Attempts:
+          attempts:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we/attempts/"
-  
+
     address_example_american:
       value:
         address_line1: 4022 Laguna St
@@ -182,7 +203,7 @@ components:
         country: US
 
   schemas:
-    IdentityVerificationRequestBody:
+    ApplicantIdentityVerificationCreationRequestBody:
       type: object
       required: [configuration]
       properties:
@@ -190,10 +211,19 @@ components:
           type: integer
           description: Configuration id.
           example: 572
+
+    IdentityVerificationCreationRequestBody:
+      type: object
+      required: [configuration, applicant]
+      properties:
+        configuration:
+          type: integer
+          description: Configuration id.
+          example: 572
         applicant:
-          $ref: '#/components/schemas/Applicant'
-  
-    IdentityVerificationCreationResponse:
+          $ref: "#/components/schemas/Applicant"
+
+    IdentityVerificationCreationResponseBody:
       type: object
       properties:
         id:
@@ -201,7 +231,7 @@ components:
           description: IdentityVerification unique identifier.
           example: idv_tkoi5db4hryu5cei5vwoabr7we
         status:
-          $ref: '#/components/schemas/IdentityVerificationStatues'
+          $ref: "#/components/schemas/IdentityVerificationStatues"
         reason_codes:
           type: array
           items:
@@ -212,33 +242,52 @@ components:
           description: Configuration id.
           example: 572
         applicant_id:
-          $ref: '#/components/schemas/ApplicantId'
+          $ref: "#/components/schemas/ApplicantId"
         last_attempt:
-          $ref: '#/components/schemas/Attempt'
+          $ref: "#/components/schemas/Attempt"
         _links:
-          $ref: '#/components/schemas/Links'
+          $ref: "#/components/schemas/Links"
 
-    Applicant:
+    ApplicantCreationRequestBody:
       type: object
+      required: [declared_data]
       properties:
-        id:
-          $ref: '#/components/schemas/ApplicantId'
         external_applicant_id:
           type: string
-          example: 'ext_osdfdfdb4hryu5cei5vwoabrk5k'
+          example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
         phone:
           type: string
           format: phone
-          example: '+12068133616'
+          example: "+12068133616"
         email:
           type: string
           format: email
           example: david.vincent@courriel.ml
         declared_data:
-          $ref: '#/components/schemas/DeclaredData'
+          $ref: "#/components/schemas/DeclaredData"
         _links:
-          $ref: '#/components/schemas/Links'
+          $ref: "#/components/schemas/Links"
 
+    Applicant:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ApplicantId"
+        external_applicant_id:
+          type: string
+          example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
+        phone:
+          type: string
+          format: phone
+          example: "+12068133616"
+        email:
+          type: string
+          format: email
+          example: david.vincent@courriel.ml
+        declared_data:
+          $ref: "#/components/schemas/DeclaredData"
+        _links:
+          $ref: "#/components/schemas/Links"
 
     Attempt:
       type: object
@@ -264,17 +313,17 @@ components:
           type: string
           example: Vincent
         gender:
-          $ref: '#/components/schemas/Genders'
+          $ref: "#/components/schemas/Genders"
         birth_date:
           type: string
           format: date
           example: 1934-10-02
         nationality:
-          $ref: '#/components/schemas/CountryCode'
+          $ref: "#/components/schemas/CountryCode"
         birth_place_country:
-          $ref: '#/components/schemas/CountryCode'
+          $ref: "#/components/schemas/CountryCode"
         address:
-          $ref: '#/components/schemas/Address'
+          $ref: "#/components/schemas/Address"
 
     IdentityVerificationStatues:
       type: string
@@ -329,7 +378,7 @@ components:
           maxLength: 20
           example: 93101
         country:
-          $ref: '#/components/schemas/CountryCode'
+          $ref: "#/components/schemas/CountryCode"
 
     CountryCode:
       type: string
@@ -353,17 +402,17 @@ components:
           example: https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we
 
   requestBodies:
-    IdentityVerificationRequestBody:
+    IdentityVerificationCreationRequestBody:
       description: Identity verification request body.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IdentityVerificationRequestBody'
+            $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
   responses:
     IdentityVerificationOutput:
       description: Identity verification response.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/IdentityVerificationCreationResponse'
+            $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"

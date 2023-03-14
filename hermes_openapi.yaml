@@ -3,7 +3,7 @@ openapi: 3.0.3
 info:
   title: Hermes - the identity verification API
   description: |-
-    Hermes is the identification
+    Hermes is the identity verification API.
   version: 2.0.0
 
 externalDocs:
@@ -58,53 +58,6 @@ paths:
         "405":
           description: Invalid input
 
-  /applicants/:
-    post:
-      tags:
-        - applicants
-      summary: Create an Applicant
-      description: Create an Applicant
-      operationId: create_applicant
-      requestBody:
-        description: Create an Applicant
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ApplicantCreationRequestBody"
-            examples:
-              Only required data:
-                value:
-                  declared_data:
-                    first_name: David
-                    last_name: Vincent
-              All possible data:
-                value:
-                  external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-                  phone: "+12068133616"
-                  email: david.vincent@courriel.ml
-                  declared_data:
-                    first_name: David
-                    last_name: Vincent
-                    married_name: Vincent
-                    gender: M
-                    birth_date: 1934-10-02
-                    nationality: US
-                    birth_place_country: US
-                    address:
-                      address_line1: 4022 Laguna St
-                      address_line2: Flat 456
-                      city: Santa Barbara
-                      zip: 93101
-                      country: US
-      responses:
-        "201":
-          description: Applicant created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Applicant"
-
   /applicants/{applicant_id}/identity-verifications/:
     post:
       tags:
@@ -119,6 +72,51 @@ paths:
                   $ref: "#/components/examples/identity_verification_creation_response_body"
               schema:
                 $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
+
+  /applicants/:
+    post:
+      tags:
+        - applicants
+      summary: Create an Applicant
+      description: Create an Applicant
+      operationId: create_applicant
+      requestBody:
+        description: Create an Applicant
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicantCreationRequestBody"
+            examples:
+              All possible data:
+                $ref: "#/components/examples/applicant_creation_request_body"
+
+      responses:
+        "201":
+          description: Applicant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicantCreationResponseBody"
+              examples:
+                Always replies:
+                  $ref: "#/components/examples/applicant_creation_response_body"
+        "400":
+          description: Invalid phone number
+          content:
+            application/json:
+              examples:
+                Invalid phone number:
+                  value:
+                    {
+                      "errors":
+                        [
+                          {
+                            "detail": "The phone number format must be E.164 ITU-T.",
+                            "source": "/phone_number",
+                            "code": "invalid_format",
+                          },
+                        ],
+                    }
 
   /applicants/{applicant_id}/:
     get:
@@ -141,8 +139,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Applicant"
-        "400":
-          description: Invalid ID supplied
+              examples:
+                Always replies:
+                  $ref: "#/components/examples/applicant_retrieval_response_body"
         "404":
           description: Applicant not found
 
@@ -153,7 +152,7 @@ components:
         configuration: 987
         applicant:
           external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-          phone: "+12068133616"
+          phone_number: "+12068133616"
           email: david.vincent@courriel.ml
           declared_data:
             first_name: David
@@ -169,6 +168,23 @@ components:
               city: Santa Barbara
               zip: 93101
               country: US
+
+    declared_data_creation_request_body_max:
+      value:
+        first_name: David
+        last_name: Vincent
+        married_name: Vincent
+        gender: M
+        birth_date: 1934-10-02
+        nationality: US
+        birth_place_country: US
+        address:
+          address_line1: 4022 Laguna St
+          address_line2: Flat 456
+          city: Santa Barbara
+          zip: 93101
+          country: US
+
     identity_verification_creation_request_body_min:
       value:
         configuration: 987
@@ -176,10 +192,6 @@ components:
           declared_data:
             first_name: David
             last_name: Vincent
-
-    applicant_identity_verification_creation_request_body_max:
-      value:
-        configuration: 478
 
     identity_verification_creation_response_body:
       value:
@@ -189,10 +201,37 @@ components:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
           applicant:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
-          active_attempt_link:
-            href: "https://id.ubble.ai/4hryu5cei5/"
           attempts:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we/attempts/"
+          active_attempt_link:
+            href: "https://id.ubble.ai/4hryu5cei5/"
+
+    applicant_identity_verification_creation_request_body_max:
+      value:
+        configuration: 478
+
+    applicant_creation_request_body:
+      value:
+        external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+        phone_number: "+12068133616"
+        email: david.vincent@courriel.ml
+
+    applicant_creation_response_body:
+      value:
+        id: apl_tkoi5db4hryu5cei5vwoabr7we
+        _links:
+          self:
+            href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
+
+    applicant_retrieval_response_body:
+      value:
+        id: apl_tkoi5db4hryu5cei5vwoabr7we
+        external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+        phone_number: "+12068133616"
+        email: david.vincent@courriel.ml
+        _links:
+          self:
+            href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
 
     address_example_american:
       value:
@@ -255,16 +294,18 @@ components:
         external_applicant_id:
           type: string
           example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
-        phone:
-          type: string
-          format: phone
-          example: "+12068133616"
+        phone_number:
+          $ref: "#/components/schemas/PhoneNumber"
         email:
           type: string
           format: email
           example: david.vincent@courriel.ml
-        declared_data:
-          $ref: "#/components/schemas/DeclaredData"
+
+    ApplicantCreationResponseBody:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ApplicantId"
         _links:
           $ref: "#/components/schemas/Links"
 
@@ -276,16 +317,12 @@ components:
         external_applicant_id:
           type: string
           example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
-        phone:
-          type: string
-          format: phone
-          example: "+12068133616"
+        phone_number:
+          $ref: "#/components/schemas/PhoneNumber"
         email:
           type: string
           format: email
           example: david.vincent@courriel.ml
-        declared_data:
-          $ref: "#/components/schemas/DeclaredData"
         _links:
           $ref: "#/components/schemas/Links"
 
@@ -393,13 +430,21 @@ components:
         - M
         - F
 
+    PhoneNumber:
+      type: string
+      format: E.164 ITU
+      pattern: ^\+[1-9]\d{1,14}$
+      example: "+12068133616"
+
     Links:
       type: object
       properties:
         self:
-          type: string
-          format: uri
-          example: https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we
+          type: object
+          properties:
+            href:
+              type: string
+              format: uri
 
   requestBodies:
     IdentityVerificationCreationRequestBody:
@@ -409,6 +454,7 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
+
   responses:
     IdentityVerificationOutput:
       description: Identity verification response.

@@ -1,0 +1,8 @@
+type: object
+properties:
+  self:
+    type: object
+    properties:
+      href:
+        type: string
+        format: uri

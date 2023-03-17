@@ -1,4 +1,0 @@
-type: string
-format: E.164 ITU
-pattern: ^\+[1-9]\d{1,14}$
-example: "+12068133616"

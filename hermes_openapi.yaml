@@ -92,7 +92,7 @@ paths:
 
       responses:
         "201":
-          description: Applicant created
+          description: Created
           content:
             application/json:
               schema:
@@ -101,21 +101,15 @@ paths:
                 Always replies:
                   $ref: "#/components/examples/applicant_creation_response_body"
         "400":
-          description: Invalid phone number
+          description: Bad request
           content:
             application/json:
               examples:
                 Invalid phone number:
                   value:
                     {
-                      "errors":
-                        [
-                          {
-                            "detail": "The phone number format must be E.164 ITU-T.",
-                            "source": "/phone_number",
-                            "code": "invalid_format",
-                          },
-                        ],
+                      "error_type": "request_invalid",
+                      "error_codes": ["phone_number__invalid_format"],
                     }
 
   /applicants/{applicant_id}/:

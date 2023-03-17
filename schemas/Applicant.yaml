@@ -1,0 +1,15 @@
+type: object
+properties:
+  id:
+    $ref: "../schemas/ApplicantId.yaml"
+  external_applicant_id:
+    type: string
+    example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
+  phone_number:
+    $ref: "../schemas/PhoneNumber.yaml"
+  email:
+    type: string
+    format: email
+    example: david.vincent@courriel.ml
+  _links:
+    $ref: "../schemas/Links.yaml"

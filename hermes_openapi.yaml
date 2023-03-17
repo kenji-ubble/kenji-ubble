@@ -125,14 +125,14 @@ paths:
           in: path
           description: ID of Applicant to return
           schema:
-            $ref: "#/components/schemas/ApplicantId"
+            $ref: "./schemas/ApplicantId.yaml"
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Applicant"
+                $ref: "#/components/schemas/ApplicantRetrievalResponseBody"
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_retrieval_response_body"
@@ -220,6 +220,8 @@ components:
     applicant_retrieval_response_body:
       value:
         id: apl_tkoi5db4hryu5cei5vwoabr7we
+        created_on: 1673972255
+        modified_on: 1679069908
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
         phone_number: "+12068133616"
         email: david.vincent@courriel.ml
@@ -254,7 +256,7 @@ components:
           description: Configuration id.
           example: 572
         applicant:
-          $ref: "#/components/schemas/Applicant"
+          $ref: "./schemas/Applicant.yaml"
 
     IdentityVerificationCreationResponseBody:
       type: object
@@ -275,11 +277,11 @@ components:
           description: Configuration id.
           example: 572
         applicant_id:
-          $ref: "#/components/schemas/ApplicantId"
+          $ref: "./schemas/ApplicantId.yaml"
         last_attempt:
           $ref: "#/components/schemas/Attempt"
         _links:
-          $ref: "#/components/schemas/Links"
+          $ref: "./schemas/Links.yaml"
 
     ApplicantCreationRequestBody:
       type: object
@@ -289,7 +291,7 @@ components:
           type: string
           example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
         phone_number:
-          $ref: "#/components/schemas/PhoneNumber"
+          $ref: "./schemas/PhoneNumber.yaml"
         email:
           type: string
           format: email
@@ -299,26 +301,15 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/ApplicantId"
+          $ref: "./schemas/ApplicantId.yaml"
         _links:
-          $ref: "#/components/schemas/Links"
+          $ref: "./schemas/Links.yaml"
 
-    Applicant:
+    ApplicantRetrievalResponseBody:
       type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/ApplicantId"
-        external_applicant_id:
-          type: string
-          example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
-        phone_number:
-          $ref: "#/components/schemas/PhoneNumber"
-        email:
-          type: string
-          format: email
-          example: david.vincent@courriel.ml
-        _links:
-          $ref: "#/components/schemas/Links"
+      allOf:
+        - $ref: "./schemas/DatedObject.yaml"
+        - $ref: "./schemas/Applicant.yaml"
 
     Attempt:
       type: object
@@ -378,11 +369,6 @@ components:
         - capture_aborted
         - checks_aborted
 
-    ApplicantId:
-      type: string
-      description: Applicant unique identifier.
-      example: apl_tkoi5db4hryu5cei5vwoabr7we
-
     Address:
       type: object
       description: Postal address.
@@ -423,22 +409,6 @@ components:
       enum:
         - M
         - F
-
-    PhoneNumber:
-      type: string
-      format: E.164 ITU
-      pattern: ^\+[1-9]\d{1,14}$
-      example: "+12068133616"
-
-    Links:
-      type: object
-      properties:
-        self:
-          type: object
-          properties:
-            href:
-              type: string
-              format: uri
 
   requestBodies:
     IdentityVerificationCreationRequestBody:

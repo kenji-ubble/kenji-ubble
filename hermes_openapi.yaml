@@ -2,8 +2,23 @@ openapi: 3.0.3
 
 info:
   title: Hermes - the identity verification API
-  description: |-
+  description: |
+    # Introduction
     Hermes is the identity verification API.
+
+    ## Ressources identifiers
+    ### Format
+    `{prefix}_{lower-case base-32 encoded GUID}`
+
+    ### Ressources identifiers are formatted as follows
+
+    | ressource name         | prefix | example                         |
+    |------------------------|--------|---------------------------------|
+    | applicants             | apl    | apl_tkoi5db4hryu5cei5vwoabr7we  |
+    | attempts               | atp    | atp_tkoi5db4hryu5cei5vwoabr7we  |
+    | business-paths         | bupa   | bupa_tkoi5db4hryu5cei5vwoabr7we |
+    | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
+
   version: 2.0.0
 
 externalDocs:
@@ -39,10 +54,14 @@ paths:
         content:
           application/json:
             examples:
-              Only required data:
+              Only required data (creates a new applicant):
                 $ref: "#/components/examples/identity_verification_creation_request_body_min"
-              All possible data:
+              All possible data (creates a new applicant):
                 $ref: "#/components/examples/identity_verification_creation_request_body_max"
+              Use an existing applicant:
+                $ref: "#/components/examples/identity_verification_creation_request_body_reuse"
+              Use and update an existing applicant:
+                $ref: "#/components/examples/identity_verification_creation_request_body_reuse_and_update"
             schema:
               $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
       responses:
@@ -55,8 +74,6 @@ paths:
                   $ref: "#/components/examples/identity_verification_creation_response_body"
               schema:
                 $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
-        "405":
-          description: Invalid input
 
   /applicants/{applicant_id}/identity-verifications/:
     post:
@@ -143,49 +160,51 @@ components:
   examples:
     identity_verification_creation_request_body_max:
       value:
-        configuration: 987
+        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
         applicant:
           external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
           phone_number: "+12068133616"
           email: david.vincent@courriel.ml
-          declared_data:
-            first_name: David
-            last_name: Vincent
-            married_name: Vincent
-            gender: M
-            birth_date: 1934-10-02
-            nationality: US
-            birth_place_country: US
-            address:
-              address_line1: 4022 Laguna St
-              address_line2: Flat 456
-              city: Santa Barbara
-              zip: 93101
-              country: US
-
-    declared_data_creation_request_body_max:
-      value:
-        first_name: David
-        last_name: Vincent
-        married_name: Vincent
-        gender: M
-        birth_date: 1934-10-02
-        nationality: US
-        birth_place_country: US
-        address:
-          address_line1: 4022 Laguna St
-          address_line2: Flat 456
-          city: Santa Barbara
-          zip: 93101
-          country: US
+        declared_data:
+          first_name: David
+          last_name: Vincent
+          married_name: Vincent
+          gender: M
+          birth_date: 1934-10-02
+          nationality: US
+          birth_place_country: US
+          address:
+            address_line1: 4022 Laguna St
+            address_line2: Flat 456
+            city: Santa Barbara
+            zip: 93101
+            country: US
 
     identity_verification_creation_request_body_min:
       value:
-        configuration: 987
-        applicant:
-          declared_data:
-            first_name: David
-            last_name: Vincent
+        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        declared_data:
+          first_name: David
+          last_name: Vincent
+
+    identity_verification_creation_request_body_reuse:
+      value:
+        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        Applicant:
+          id: apl_tkoi5db4hryu5cei5vwoabr7we
+        declared_data:
+          first_name: David
+          last_name: Vincent
+
+    identity_verification_creation_request_body_reuse_and_update:
+      value:
+        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        Applicant:
+          id: apl_tkoi5db4hryu5cei5vwoabr7we
+          email: david.vincent@courriel.crl
+        declared_data:
+          first_name: David
+          last_name: Vincent
 
     identity_verification_creation_response_body:
       value:
@@ -199,10 +218,6 @@ components:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we/attempts/"
           active_attempt_link:
             href: "https://id.ubble.ai/4hryu5cei5/"
-
-    applicant_identity_verification_creation_request_body_max:
-      value:
-        configuration: 478
 
     applicant_creation_request_body:
       value:
@@ -249,14 +264,12 @@ components:
 
     IdentityVerificationCreationRequestBody:
       type: object
-      required: [configuration, applicant]
+      required: [business_path, declared_data]
       properties:
-        configuration:
-          type: integer
-          description: Configuration id.
-          example: 572
-        applicant:
-          $ref: "#/components/schemas/Applicant"
+        business_path:
+          $ref: "#/components/schemas/BusinessPathId"
+        declared_data:
+          $ref: "#/components/schemas/DeclaredData"
 
     IdentityVerificationCreationResponseBody:
       type: object
@@ -390,6 +403,11 @@ components:
       type: string
       description: Applicant unique identifier.
       example: apl_tkoi5db4hryu5cei5vwoabr7we
+
+    BusinessPathId:
+      type: string
+      description: Business path unique identifier.
+      example: bupa_tkoi5db4hryu5cei5vwoabr7we
 
     Address:
       type: object

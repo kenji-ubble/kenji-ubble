@@ -275,24 +275,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          description: IdentityVerification unique identifier.
-          example: idv_tkoi5db4hryu5cei5vwoabr7we
-        status:
-          $ref: "#/components/schemas/IdentityVerificationStatues"
-        reason_codes:
-          type: array
-          items:
-            type: integer
-          example: [1001, 2006]
-        configuration:
-          type: integer
-          description: Configuration id.
-          example: 572
-        applicant_id:
-          $ref: "#/components/schemas/ApplicantId"
-        last_attempt:
-          $ref: "#/components/schemas/Attempt"
+          $ref: "#/components/schemas/IdentityVerificationId"
         _links:
           $ref: "#/components/schemas/Links"
 
@@ -403,6 +386,11 @@ components:
       type: string
       description: Applicant unique identifier.
       example: apl_tkoi5db4hryu5cei5vwoabr7we
+
+    IdentityVerificationId:
+      type: string
+      description: Identity verification unique identifier.
+      example: idv_tkoi5db4hryu5cei5vwoabr7we
 
     BusinessPathId:
       type: string

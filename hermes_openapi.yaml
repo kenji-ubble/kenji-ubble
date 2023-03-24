@@ -425,10 +425,24 @@ components:
         - F
 
     PhoneNumber:
+      type: object
+      properties:
+        country_code:
+          $ref: "#/components/schemas/PhonePrefix"
+        number:
+          $ref: "#/components/schemas/DomesticPhoneNumber"
+
+    PhonePrefix:
       type: string
-      format: E.164 ITU
-      pattern: ^\+[1-9]\d{1,14}$
-      example: "+12068133616"
+      format: international phone prefix
+      pattern: ^((\+)|(00))?(\d+)$
+      example: +33
+
+    DomesticPhoneNumber:
+      type: string
+      format: domestic phone number
+      pattern: ^\d{1,14}$
+      example: +33
 
     Links:
       type: object

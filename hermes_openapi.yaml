@@ -284,6 +284,7 @@ components:
 
     ApplicantCreationResponseBody:
       type: object
+      required: ["id", "_links"]
       properties:
         id:
           $ref: "#/components/schemas/ApplicantId"
@@ -292,9 +293,13 @@ components:
 
     ApplicantRetrievalResponseBody:
       type: object
+      required: ["id"]
+      properties:
+        id:
+          $ref: "#/components/schemas/ApplicantId"
       allOf:
         - $ref: "#/components/schemas/DatedObject"
-        - $ref: "#/components/schemas/Applicant"
+        - $ref: "#/components/schemas/ApplicantCreationRequestBody"
 
     Applicant:
       type: object
@@ -421,6 +426,7 @@ components:
 
     PhoneNumber:
       type: object
+      required: ["country_code", "number"]
       properties:
         country_code:
           $ref: "#/components/schemas/PhonePrefix"
@@ -451,6 +457,7 @@ components:
 
     DatedObject:
       type: object
+      required: ["created_on", "modified_on"]
       properties:
         created_on:
           description: Epoch time in milliseconds when the message was created

@@ -34,16 +34,9 @@ info:
 
     # Verification flow
     ## Verification status state diagram
-    ```mermaid
-    graph LR
-        Start --> Stop
-    ```
+    ![cached image](https://plantuml-server.kkeisuke.dev/svg/VPF1RiCW38RlF0NIRfFQ1yXXwctQRQTTfYcYmKkj4K8DwJPDVVSH0WAsf3SJVxP_yvE3TOBSD2Z673e5_4c2zj7t2n2-OoSSZdhl8JTPlkDp05oYw4aCZ2r7b9Uz0IrHz_nEONzoHpN13-CH5yxa_BDGy4W0cbsBSjIjeR4di7QpHIUCcmZQYitjAlG4tOVT8il16ZxRr9ZWF261t5G0NsR9RqoDVSHn97S3MyIjK4bOeCR1A9Y1WiXoPkt2-EqkbTugBw5JgElybR7N-pU-UoXTQNX749ncfLSHMhdtXeTdmxPiIPN_RF2J8XxtIpDN74jDqaNusWKgIckziIBQrF0GvBrMbVvPChgITOOFjrJMk-RwuXoK7hnA_v_z0W00.svg)
 
   version: 2.0.0
-
-externalDocs:
-  description: Hermes API concepts
-  url: https://ubbleai.atlassian.net/wiki/spaces/PRODUCT/pages/714933113/How+do+we+want+to+structure+our+data+about+an+identity+verification
 
 servers:
   - url: https://api.ubble.ai/v2/

@@ -149,7 +149,9 @@ components:
         business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
         applicant:
           external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-          phone_number: "+12068133616"
+          phone_number:
+            country_code: "+1"
+            number: "2068133616"
           email: david.vincent@courriel.ml
         declared_data:
           first_name: David
@@ -196,7 +198,9 @@ components:
     applicant_creation_request_body:
       value:
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-        phone_number: "+12068133616"
+        phone_number:
+          country_code: "+1"
+          number: "2068133616"
         email: david.vincent@courriel.ml
 
     applicant_creation_response_body:
@@ -212,7 +216,9 @@ components:
         created_on: 1673972255
         modified_on: 1679069908
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-        phone_number: "+12068133616"
+        phone_number:
+          country_code: "+1"
+          number: "2068133616"
         email: david.vincent@courriel.ml
         _links:
           self:
@@ -436,13 +442,13 @@ components:
       type: string
       format: international phone prefix
       pattern: ^((\+)|(00))?(\d+)$
-      example: +33
+      example: "+33"
 
     DomesticPhoneNumber:
       type: string
       format: domestic phone number
       pattern: ^\d{1,14}$
-      example: +33
+      example: "2068133616"
 
     Links:
       type: object

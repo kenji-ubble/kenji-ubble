@@ -6,6 +6,14 @@ info:
     # Introduction
     Hermes is the identity verification API.
 
+    # API standards
+    ## Required tag
+    ### required
+    Attributes tagged as `required` are **MUST** be present in requests and reponses.
+
+    ### not required
+    Attributes not marked as `required` can be empty in responses. In that case the attribute is not sent in the response.
+
     ## Ressources identifiers
     ### Format
     `{prefix}_{lower-case base-32 encoded GUID}`
@@ -19,6 +27,17 @@ info:
     | business-paths         | bupa   | bupa_tkoi5db4hryu5cei5vwoabr7we |
     | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
     | organization           | org    | org_tkoi5db4hryu5cei5vwoabr7we  |
+
+    ## Status codes
+
+    ## Error handling
+
+    # Verification flow
+    ## Verification status state diagram
+    ```mermaid
+    graph LR
+        Start --> Stop
+    ```
 
   version: 2.0.0
 

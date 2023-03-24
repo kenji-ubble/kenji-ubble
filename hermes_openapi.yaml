@@ -333,21 +333,10 @@ components:
         last_name:
           type: string
           example: Vincent
-        married_name:
-          type: string
-          example: Vincent
-        gender:
-          $ref: "#/components/schemas/Genders"
         birth_date:
           type: string
           format: date
           example: 1934-10-02
-        nationality:
-          $ref: "#/components/schemas/CountryCode"
-        birth_place_country:
-          $ref: "#/components/schemas/CountryCode"
-        address:
-          $ref: "#/components/schemas/Address"
 
     IdentityVerificationStatues:
       type: string

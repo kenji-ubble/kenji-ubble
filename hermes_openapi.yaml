@@ -115,6 +115,31 @@ paths:
               schema:
                 $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
 
+  /identity-verifications/{identity_verification_id}/:
+    get:
+      tags:
+        - identity verifications
+      summary: Retrieve an identity verification by id
+      description: Returns a single identity verification
+      operationId: retrieve_identity_verification_by_id
+      parameters:
+        - name: identity_verification_id
+          required: true
+          in: path
+          description: ID of identity verification to return
+          schema:
+            $ref: "#/components/schemas/IdentityVerificationId"
+      responses:
+        "200":
+          description: Identity verification retrieved
+          content:
+            application/json:
+              examples:
+                identity_verification_creation_response_body:
+                  $ref: "#/components/examples/identity_verification_retrieval_response_body"
+              schema:
+                $ref: "#/components/schemas/IdentityVerification"
+
   /applicants/:
     post:
       tags:
@@ -127,7 +152,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ApplicantCreationRequestBody"
+              $ref: "#/components/schemas/Applicant"
             examples:
               All possible data:
                 $ref: "#/components/examples/applicant_creation_request_body"
@@ -138,7 +163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApplicantCreationResponseBody"
+                $ref: "#/components/schemas/Applicant"
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_creation_response_body"
@@ -160,7 +185,7 @@ paths:
         - applicants
       summary: Find an Applicant by ID
       description: Returns a single Applicant
-      operationId: get_applicant_by_id
+      operationId: retrieve_applicant_by_id
       parameters:
         - name: applicant_id
           required: true
@@ -174,7 +199,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApplicantRetrievalResponseBody"
+                $ref: "#/components/schemas/Applicant"
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_retrieval_response_body"
@@ -234,6 +259,17 @@ components:
           active_attempt_link:
             href: "https://id.ubble.ai/4hryu5cei5/"
 
+    identity_verification_retrieval_response_body:
+      value:
+        id: idv_tkoi5db4hryu5cei5vwoabr7we
+        _links:
+          self:
+            href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
+          applicant:
+            href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
+          active_attempt_link:
+            href: "https://id.ubble.ai/4hryu5cei5/"
+
     applicant_creation_request_body:
       value:
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
@@ -272,24 +308,17 @@ components:
         country: US
 
   schemas:
-    ApplicantIdentityVerificationCreationRequestBody:
-      type: object
-      required: [configuration]
-      properties:
-        configuration:
-          type: integer
-          description: Configuration id.
-          example: 572
-
     IdentityVerificationCreationRequestBody:
       type: object
       required: [business_path, declared_data]
       properties:
         business_path:
-          $ref: "#/components/schemas/BusinessPathId"
+          readOnly: false
+          allOf:
+            - $ref: "#/components/schemas/BusinessPathId"
         applicant:
           oneOf:
-            - $ref: "#/components/schemas/ApplicantCreationRequestBody"
+            - $ref: "#/components/schemas/Applicant"
             - $ref: "#/components/schemas/ApplicantRelationCreationBody"
         declared_data:
           $ref: "#/components/schemas/DeclaredData"
@@ -300,70 +329,143 @@ components:
         id:
           $ref: "#/components/schemas/IdentityVerificationId"
         _links:
-          $ref: "#/components/schemas/Links"
+          $ref: "#/components/schemas/IdentityVerificationLinks"
 
-    Links:
+    IdentityVerificationLinks:
       type: object
       allOf:
         - $ref: "#/components/schemas/SelfLink"
         - $ref: "#/components/schemas/ApplicantLink"
         - $ref: "#/components/schemas/ActiveAttemptLink"
 
+    IdentityVerification:
+      type: object
+      required: ["id", "business_path"]
+      properties:
+        id:
+          $ref: "#/components/schemas/IdentityVerificationId"
+        business_path:
+          $ref: "#/components/schemas/BusinessPathId"
+      allOf:
+        - $ref: "#/components/schemas/DatedObject"
+        - $ref: "#/components/schemas/IdentityVerificationBase"
+
+    IdentityVerificationBase:
+      type: object
+      required: ["applicant", "declared_data", "_links"]
+      properties:
+        applicant:
+          $ref: "#/components/schemas/Applicant"
+        verified_identity:
+          $ref: "#/components/schemas/Identity"
+        declared_data:
+          $ref: "#/components/schemas/DeclaredData"
+        documents:
+          type: array
+          maxItems: 2
+          items:
+            $ref: "#/components/schemas/Document"
+        face:
+          $ref: "#/components/schemas/Face"
+        _links:
+          $ref: "#/components/schemas/IdentityVerificationLinks"
+
+    DeclaredData:
+      type: object
+      required: ["first_name", "last_name"]
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        birth_date:
+          type: string
+          format: date
+
+    Document:
+      type: object
+      required: ["first_name", "last_name", "front_image_signed_url"]
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+          readOnly: true
+        last_name:
+          type: string
+          maxLength: 100
+          readOnly: true
+        front_image_signed_url:
+          type: string
+          format: uri
+          readOnly: true
+        back_image_signed_url:
+          type: string
+          format: uri
+          readOnly: true
+
+    Identity:
+      type: object
+      required: ["first_name", "last_name", "birth_date"]
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+          readOnly: true
+        last_name:
+          type: string
+          maxLength: 100
+          readOnly: true
+        birth_date:
+          type: string
+          format: date
+          readOnly: true
+
+    Face:
+      type: object
+      required: ["image_signed_url"]
+      properties:
+        image_signed_url:
+          type: string
+          format: uri
+          readOnly: true
+
     ApplicantLink:
       type: object
+      required: ["applicant"]
       properties:
         applicant:
           $ref: "#/components/schemas/HalLink"
 
     ActiveAttemptLink:
       type: object
+      required: ["active_attempt_link"]
       properties:
         active_attempt_link:
           $ref: "#/components/schemas/HalLink"
-
-    ApplicantCreationRequestBody:
-      type: object
-      properties:
-        external_applicant_id:
-          type: string
-          example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
-        phone_number:
-          $ref: "#/components/schemas/PhoneNumber"
-        email:
-          type: string
-          format: email
-          example: david.vincent@courriel.ml
 
     ApplicantRelationCreationBody:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/ApplicantId"
-
-    ApplicantCreationResponseBody:
-      type: object
-      required: ["id", "_links"]
-      properties:
-        id:
-          $ref: "#/components/schemas/ApplicantId"
-        _links:
-          $ref: "#/components/schemas/Links"
-
-    ApplicantRetrievalResponseBody:
-      type: object
-      required: ["id"]
-      properties:
-        id:
-          $ref: "#/components/schemas/ApplicantId"
-      allOf:
-        - $ref: "#/components/schemas/DatedObject"
-        - $ref: "#/components/schemas/ApplicantCreationRequestBody"
+          readOnly: false
+          allOf:
+            - $ref: "#/components/schemas/ApplicantId"
 
     Applicant:
       type: object
       properties:
         id:
           $ref: "#/components/schemas/ApplicantId"
+      allOf:
+        - $ref: "#/components/schemas/DatedObject"
+        - $ref: "#/components/schemas/BaseApplicant"
+
+    BaseApplicant:
+      type: object
+      required: ["id", "_links"]
+      properties:
         external_applicant_id:
           type: string
           example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
@@ -374,7 +476,7 @@ components:
           format: email
           example: david.vincent@courriel.ml
         _links:
-          $ref: "#/components/schemas/Links"
+          $ref: "#/components/schemas/SelfLink"
 
     Attempt:
       type: object
@@ -385,21 +487,6 @@ components:
           type: string
           format: uri
           example: https://id.ubble.ai/4hryu5cei5/
-
-    DeclaredData:
-      type: object
-      required: [first_name, last_name]
-      properties:
-        first_name:
-          type: string
-          example: David
-        last_name:
-          type: string
-          example: Vincent
-        birth_date:
-          type: string
-          format: date
-          example: 1934-10-02
 
     IdentityVerificationStatues:
       type: string
@@ -428,18 +515,21 @@ components:
       description: Applicant unique identifier.
       pattern: ^apl_\w+$
       example: apl_tkoi5db4hryu5cei5vwoabr7we
+      readOnly: true
 
     IdentityVerificationId:
       type: string
       description: Identity verification unique identifier.
       pattern: ^idv_\w+$
       example: idv_tkoi5db4hryu5cei5vwoabr7we
+      readOnly: true
 
     BusinessPathId:
       type: string
       description: Business path unique identifier.
       pattern: ^bupa_\w+$
       example: bupa_tkoi5db4hryu5cei5vwoabr7we
+      readOnly: true
 
     Address:
       type: object
@@ -505,12 +595,15 @@ components:
 
     SelfLink:
       type: object
+      required: ["self"]
+      readOnly: true
       properties:
         self:
           $ref: "#/components/schemas/HalLink"
 
     HalLink:
       type: object
+      required: ["href"]
       properties:
         href:
           type: string
@@ -525,11 +618,13 @@ components:
           type: string
           format: date-time
           example: 2017-07-21T17:32:28Z
+          readOnly: true
         modified_on:
           description: UTC Date time when the ressource was modified
           type: string
           format: date-time
           example: 2017-07-21T17:40:32Z
+          readOnly: true
 
   requestBodies:
     IdentityVerificationCreationRequestBody:

@@ -262,6 +262,36 @@ components:
     identity_verification_retrieval_response_body:
       value:
         id: idv_tkoi5db4hryu5cei5vwoabr7we
+        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
+        status: declined
+        applicant:
+          id: apl_tkoi5db4hryu5cei5vwoabr7we
+          created_on: 2017-07-21T17:32:28Z
+          modified_on: 2017-07-21T17:40:32Z
+          external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+          phone_number:
+            country_code: "+1"
+            number: "2068133616"
+          email: david.vincent@courriel.ml
+          _links:
+            self:
+              href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
+        verified_identity:
+          first_name: David
+          last_name: Vincent
+          birth_date: 1934-10-02
+        declared_data:
+          first_name: David
+          last_name: Vincent
+          birth_date: 1934-10-02
+        documents:
+          - document_type: ID
+            first_name: David
+            last_name: Vincent
+            front_image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
+        face:
+          image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+        reason_codes: [1003, 2001]
         _links:
           self:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
@@ -411,8 +441,11 @@ components:
 
     Document:
       type: object
-      required: ["first_name", "last_name", "front_image_signed_url"]
+      required:
+        ["document_type", "first_name", "last_name", "front_image_signed_url"]
       properties:
+        document_type:
+          $ref: "#/components/schemas/DocumentTypes"
         first_name:
           type: string
           maxLength: 100
@@ -512,6 +545,15 @@ components:
           type: string
           format: uri
           example: https://id.ubble.ai/4hryu5cei5/
+
+    DocumentTypes:
+      type: string
+      description: Type of document.
+      enum:
+        - driving license
+        - ID
+        - passport
+        - residence permit
 
     VerificationStatues:
       type: string

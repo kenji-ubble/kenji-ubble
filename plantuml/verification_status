@@ -1,0 +1,19 @@
+@startuml
+
+title Verification.status - state diagram
+
+state pending #lightblue
+state in_progress #lightblue
+state new_capture_required #lightblue
+state approved #lightblue
+state declined #lightblue
+
+[*] -> pending: create verification
+pending -> in_progress: start verification
+pending --> new_capture_required: capture expiration
+new_capture_required --> pending: retry verification
+in_progress --> new_capture_required: verification incomplete
+in_progress -> approved: verification approval
+in_progress --> declined: verification refusal
+
+@enduml

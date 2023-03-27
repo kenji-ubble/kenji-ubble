@@ -183,7 +183,7 @@ paths:
     get:
       tags:
         - applicants
-      summary: Find an Applicant by ID
+      summary: Retrieve an Applicant by ID
       description: Returns a single Applicant
       operationId: retrieve_applicant_by_id
       parameters:

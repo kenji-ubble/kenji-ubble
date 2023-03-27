@@ -210,7 +210,7 @@ components:
   examples:
     identity_verification_creation_request_body_max:
       value:
-        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
         applicant:
           external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
           phone_number:
@@ -224,14 +224,14 @@ components:
 
     identity_verification_creation_request_body_min:
       value:
-        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
           first_name: David
           last_name: Vincent
 
     identity_verification_creation_request_body_reuse:
       value:
-        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
         Applicant:
           id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
@@ -240,7 +240,7 @@ components:
 
     identity_verification_creation_request_body_both_id_and_attributes:
       value:
-        business_path: bupa_tkoi5db4hryu5cei5vwoabr7we
+        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
         Applicant:
           id: apl_tkoi5db4hryu5cei5vwoabr7we
           email: david.vincent@courriel.crl
@@ -310,9 +310,9 @@ components:
   schemas:
     IdentityVerificationCreationRequestBody:
       type: object
-      required: [business_path, declared_data]
+      required: [business_path_id, declared_data]
       properties:
-        business_path:
+        business_path_id:
           readOnly: false
           allOf:
             - $ref: "#/components/schemas/BusinessPathId"
@@ -340,20 +340,38 @@ components:
 
     IdentityVerification:
       type: object
-      required: ["id", "business_path"]
+      required: ["id"]
       properties:
         id:
           $ref: "#/components/schemas/IdentityVerificationId"
-        business_path:
-          $ref: "#/components/schemas/BusinessPathId"
       allOf:
         - $ref: "#/components/schemas/DatedObject"
         - $ref: "#/components/schemas/IdentityVerificationBase"
 
     IdentityVerificationBase:
       type: object
-      required: ["applicant", "declared_data", "_links"]
+      required:
+        [
+          "business_path_id",
+          "applicant",
+          "declared_data",
+          "documents",
+          "status",
+          "reason_codes",
+          "web_hook",
+          "redirect_url",
+          "_links",
+        ]
       properties:
+        business_path_id:
+          $ref: "#/components/schemas/BusinessPathId"
+        status:
+          $ref: "#/components/schemas/VerificationStatues"
+        reason_codes:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/ReasonCode"
         applicant:
           $ref: "#/components/schemas/Applicant"
         verified_identity:
@@ -362,11 +380,18 @@ components:
           $ref: "#/components/schemas/DeclaredData"
         documents:
           type: array
+          minItems: 0
           maxItems: 2
           items:
             $ref: "#/components/schemas/Document"
         face:
           $ref: "#/components/schemas/Face"
+        web_hook:
+          type: string
+          format: uri
+        redirect_url:
+          type: string
+          format: uri
         _links:
           $ref: "#/components/schemas/IdentityVerificationLinks"
 
@@ -488,7 +513,7 @@ components:
           format: uri
           example: https://id.ubble.ai/4hryu5cei5/
 
-    IdentityVerificationStatues:
+    VerificationStatues:
       type: string
       description: Status of the identity verification.
       enum:
@@ -509,6 +534,12 @@ components:
         - expired
         - capture_aborted
         - checks_aborted
+
+    ReasonCode:
+      type: integer
+      description: Code indicating why a verification could not be approved.
+      minimum: 1000
+      maximum: 2999
 
     ApplicantId:
       type: string

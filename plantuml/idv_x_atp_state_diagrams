@@ -1,0 +1,31 @@
+@startuml
+
+title IdentityVerification.status / Attempt.state - state diagram
+
+state idv.pending #lightblue{
+  state atp.pending #PaleGreen
+}
+state idv.in_progress #lightblue{
+  state atp.capture_in_progress #PaleGreen
+  state atp.checks_in_progress #PaleGreen
+}
+state idv.new_capture_required #lightblue{
+  state atp.expired #PaleGreen
+  state atp.capture_aborted #PaleGreen
+  state atp.checks_aborted #PaleGreen
+}
+state atp.completed  #PaleGreen{
+  state idv.approved #lightblue
+  state idv.declined #lightblue
+}
+
+[*] -> atp.pending: creation
+atp.pending -> atp.capture_in_progress: start
+atp.capture_in_progress -> atp.checks_in_progress: capture_completion
+atp.checks_in_progress -> atp.completed: checks_completion
+
+atp.pending --> atp.expired: expiration
+atp.capture_in_progress --> atp.capture_aborted: capture_abortion
+atp.checks_in_progress --> atp.checks_aborted: checks_abortion
+
+@enduml

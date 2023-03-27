@@ -28,9 +28,30 @@ info:
     | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
     | organization           | org    | org_tkoi5db4hryu5cei5vwoabr7we  |
 
+    ## Content type
+    The API accepts and returns `application/json` type.
+
     ## Status codes
 
     ## Error handling
+    Errors 4xx and 5xx are formatted as follows:
+    - `error_type`: a short descirption code
+    - `error_codes`: a list of more detailed codes
+
+    Error codes and error types can be formatted as follows:
+    - `{target/attribute}__{error}`
+    - `{nested_object}__{object_attribute}__{error}`
+
+    ```json
+    {
+      "error_type": "invalid_request",
+      "error_codes": [
+        "birth_date__invalid_format",
+        "first_name__required",
+        "phone_number__country_code__invalid"
+      ]
+    }
+    ````
 
     ## Common Objects/Properties
 
@@ -281,6 +302,25 @@ components:
         _links:
           $ref: "#/components/schemas/Links"
 
+    Links:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/SelfLink"
+        - $ref: "#/components/schemas/ApplicantLink"
+        - $ref: "#/components/schemas/ActiveAttemptLink"
+
+    ApplicantLink:
+      type: object
+      properties:
+        applicant:
+          $ref: "#/components/schemas/HalLink"
+
+    ActiveAttemptLink:
+      type: object
+      properties:
+        active_attempt_link:
+          $ref: "#/components/schemas/HalLink"
+
     ApplicantCreationRequestBody:
       type: object
       properties:
@@ -463,15 +503,18 @@ components:
       pattern: ^\d{1,14}$
       example: "2068133616"
 
-    Links:
+    SelfLink:
       type: object
       properties:
         self:
-          type: object
-          properties:
-            href:
-              type: string
-              format: uri
+          $ref: "#/components/schemas/HalLink"
+
+    HalLink:
+      type: object
+      properties:
+        href:
+          type: string
+          format: uri
 
     DatedObject:
       type: object

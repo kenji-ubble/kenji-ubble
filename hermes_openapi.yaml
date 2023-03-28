@@ -183,7 +183,7 @@ paths:
     get:
       tags:
         - applicants
-      summary: Retrieve an Applicant by ID
+      summary: Find an Applicant by ID
       description: Returns a single Applicant
       operationId: retrieve_applicant_by_id
       parameters:
@@ -221,6 +221,8 @@ components:
           first_name: David
           last_name: Vincent
           birth_date: 1934-10-02
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
 
     identity_verification_creation_request_body_min:
       value:
@@ -228,6 +230,8 @@ components:
         declared_data:
           first_name: David
           last_name: Vincent
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
 
     identity_verification_creation_request_body_reuse:
       value:
@@ -237,6 +241,8 @@ components:
         declared_data:
           first_name: David
           last_name: Vincent
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
 
     identity_verification_creation_request_body_both_id_and_attributes:
       value:
@@ -247,6 +253,8 @@ components:
         declared_data:
           first_name: David
           last_name: Vincent
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
 
     identity_verification_creation_response_body:
       value:
@@ -340,18 +348,26 @@ components:
   schemas:
     IdentityVerificationCreationRequestBody:
       type: object
-      required: [business_path_id, declared_data]
+      required: [business_path_id, declared_data, webhook_url, redirect_url]
       properties:
         business_path_id:
           readOnly: false
           allOf:
             - $ref: "#/components/schemas/BusinessPathId"
         applicant:
+          # instead of using a separate body schema use polymorphism and discriminator ?
+          # https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
           oneOf:
             - $ref: "#/components/schemas/Applicant"
             - $ref: "#/components/schemas/ApplicantRelationCreationBody"
         declared_data:
           $ref: "#/components/schemas/DeclaredData"
+        webhook_url:
+          type: string
+          format: uri
+        redirect_url:
+          type: string
+          format: uri
 
     IdentityVerificationCreationResponseBody:
       type: object
@@ -370,7 +386,7 @@ components:
 
     IdentityVerification:
       type: object
-      required: ["id"]
+      required: [id]
       properties:
         id:
           $ref: "#/components/schemas/IdentityVerificationId"
@@ -382,15 +398,15 @@ components:
       type: object
       required:
         [
-          "business_path_id",
-          "applicant",
-          "declared_data",
-          "documents",
-          "status",
-          "reason_codes",
-          "web_hook",
-          "redirect_url",
-          "_links",
+          business_path_id,
+          applicant,
+          declared_data,
+          documents,
+          status,
+          reason_codes,
+          webhook_url,
+          redirect_url,
+          _links,
         ]
       properties:
         business_path_id:
@@ -416,7 +432,7 @@ components:
             $ref: "#/components/schemas/Document"
         face:
           $ref: "#/components/schemas/Face"
-        web_hook:
+        webhook_url:
           type: string
           format: uri
         redirect_url:
@@ -427,7 +443,7 @@ components:
 
     DeclaredData:
       type: object
-      required: ["first_name", "last_name"]
+      required: [first_name, last_name]
       properties:
         first_name:
           type: string
@@ -442,7 +458,7 @@ components:
     Document:
       type: object
       required:
-        ["document_type", "first_name", "last_name", "front_image_signed_url"]
+        [document_type, first_name, last_name, front_image_signed_url]
       properties:
         document_type:
           $ref: "#/components/schemas/DocumentTypes"
@@ -465,7 +481,7 @@ components:
 
     Identity:
       type: object
-      required: ["first_name", "last_name", "birth_date"]
+      required: [first_name, last_name, birth_date]
       properties:
         first_name:
           type: string
@@ -482,7 +498,7 @@ components:
 
     Face:
       type: object
-      required: ["image_signed_url"]
+      required: [image_signed_url]
       properties:
         image_signed_url:
           type: string
@@ -491,14 +507,14 @@ components:
 
     ApplicantLink:
       type: object
-      required: ["applicant"]
+      required: [applicant]
       properties:
         applicant:
           $ref: "#/components/schemas/HalLink"
 
     ActiveAttemptLink:
       type: object
-      required: ["active_attempt_link"]
+      required: [active_attempt_link]
       properties:
         active_attempt_link:
           $ref: "#/components/schemas/HalLink"
@@ -522,7 +538,7 @@ components:
 
     BaseApplicant:
       type: object
-      required: ["id", "_links"]
+      required: [id, _links]
       properties:
         external_applicant_id:
           type: string
@@ -647,7 +663,7 @@ components:
 
     PhoneNumber:
       type: object
-      required: ["country_code", "number"]
+      required: [country_code, number]
       properties:
         country_code:
           $ref: "#/components/schemas/PhonePrefix"
@@ -668,7 +684,7 @@ components:
 
     SelfLink:
       type: object
-      required: ["self"]
+      required: [self]
       readOnly: true
       properties:
         self:
@@ -676,7 +692,7 @@ components:
 
     HalLink:
       type: object
-      required: ["href"]
+      required: [href]
       properties:
         href:
           type: string
@@ -684,7 +700,7 @@ components:
 
     DatedObject:
       type: object
-      required: ["created_on", "modified_on"]
+      required: [created_on, modified_on]
       properties:
         created_on:
           description: UTC Date time when the ressource was created

@@ -81,7 +81,7 @@ tags:
       url: https://ubble.ai
 
 paths:
-  /identity-verifications/:
+  /identity-verifications:
     post:
       tags:
         - identity verifications
@@ -115,7 +115,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
 
-  /identity-verifications/{identity_verification_id}/:
+  /identity-verifications/{identity_verification_id}:
     get:
       tags:
         - identity verifications
@@ -140,7 +140,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/IdentityVerification"
 
-  /applicants/:
+  /applicants:
     post:
       tags:
         - applicants
@@ -179,7 +179,7 @@ paths:
                       "error_codes": ["phone_number__invalid_format"],
                     }
 
-  /applicants/{applicant_id}/:
+  /applicants/{applicant_id}:
     get:
       tags:
         - applicants

@@ -2,17 +2,47 @@ openapi: 3.0.3
 
 info:
   title: Hermes - the identity verification API
+  x-logo:
+    url: "https://www.ubble.ai/wp-content/uploads/2021/08/Combo_Ubble_Logo_Exe_RVB-1-1-e1627891718121.png"
   description: |
     # Introduction
     Hermes is the identity verification API.
 
     # API standards
+
+    ## Authentication
+    The Ubble API uses two types of authentication. For standard accounts Basic authenication is used,
+    and for certified accounts mutual TLS authentication in addition to Basic Authentication is used.
+    Basic authentication credentials and mutual TLS authentication certificates can be managed in the
+    client dashboard or by your account manager.
+
+    ### Basic Authentication
+    You must authenticate your calls by including your secret credentials in API requests.
+    You can manage your credentials with your account manager. Your credentials carry many privileges,
+    so be sure to keep them secure. Do not share your secret API keys in publicly accessible areas such as
+    GitHub, client-side code, and so forth.
+
+    Requests are authenticated using HTTP Basic Auth. Provide your CLIENT_ID and CLIENT_SECRET as the Basic Auth username and password.
+
+    All API requests must be made over HTTPS as calls made over plain HTTP will fail. API requests without authentication will also fail.
+
+    ### Mutual TLS Authentication
+    You must authenticate your calls by including your secret credentials as well as your client certificate and key in API requests.
+    You can manage your credentials and certificates with your account manager. Your credentials and certificates carry many privileges,
+    so be sure to keep them secure. Do not share your secret API keys or API certificates in publicly accessible areas such as GitHub,
+    client-side code, and so forth.
+
+    Requests are authenticated using HTTP Basic Auth and/or mutual TLS Provide your CLIENT_ID and CLIENT_SECRET as the Basic Auth username
+    and password. Provide your client certificate and client key as the mutual TLS certificate authentication.
+
+    All API requests must be made over HTTPS as calls made over plain HTTP will fail. API requests without authentication will also fail.
+
     ## Required tag
     ### required
     Attributes tagged as `required` are **MUST** be present in requests and reponses.
 
-    ### not required
-    Attributes not marked as `required` can be empty in responses. In that case the attribute is not sent in the response.
+    ### null values
+    Attributes not marked as `required` can be null. In that case the attribute is not sent in the response.
 
     ## Ressources identifiers
     ### Format
@@ -94,16 +124,12 @@ paths:
         content:
           application/json:
             examples:
-              ✅ Only required data (creates a new applicant):
+              Only required data (creates a new applicant):
                 $ref: "#/components/examples/identity_verification_creation_request_body_min"
-              ✅ All possible data (creates a new applicant):
+              All possible data (uses an existing applicant):
                 $ref: "#/components/examples/identity_verification_creation_request_body_max"
-              ✅ Use an existing applicant:
-                $ref: "#/components/examples/identity_verification_creation_request_body_reuse"
-              ❌ Invalid request (Applicant id and attributes not allowed):
-                $ref: "#/components/examples/identity_verification_creation_request_body_both_id_and_attributes"
             schema:
-              $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
+              $ref: "#/components/schemas/IdentityVerification"
       responses:
         "201":
           description: Identity verification created
@@ -163,7 +189,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Applicant"
+                $ref: "#/components/schemas/ApplicantCreationResponse"
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_creation_response_body"
@@ -211,45 +237,20 @@ components:
     identity_verification_creation_request_body_max:
       value:
         business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
-        applicant:
-          external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-          phone_number:
-            country_code: "+1"
-            number: "2068133616"
-          email: david.vincent@courriel.ml
+        applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
           first_name: David
           last_name: Vincent
           birth_date: 1934-10-02
+        phone_number:
+          country_code: "+1"
+          number: "2068133616"
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
 
     identity_verification_creation_request_body_min:
       value:
         business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
-        declared_data:
-          first_name: David
-          last_name: Vincent
-        webhook_url: https://my.api/events/
-        redirect_url: https://myweb.site?query-param=hello
-
-    identity_verification_creation_request_body_reuse:
-      value:
-        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
-        Applicant:
-          id: apl_tkoi5db4hryu5cei5vwoabr7we
-        declared_data:
-          first_name: David
-          last_name: Vincent
-        webhook_url: https://my.api/events/
-        redirect_url: https://myweb.site?query-param=hello
-
-    identity_verification_creation_request_body_both_id_and_attributes:
-      value:
-        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
-        Applicant:
-          id: apl_tkoi5db4hryu5cei5vwoabr7we
-          email: david.vincent@courriel.crl
         declared_data:
           first_name: David
           last_name: Vincent
@@ -264,7 +265,7 @@ components:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
           applicant:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
-          active_attempt_link:
+          active_link:
             href: "https://id.ubble.ai/4hryu5cei5/"
 
     identity_verification_retrieval_response_body:
@@ -278,9 +279,6 @@ components:
           created_on: 2017-07-21T17:32:28Z
           modified_on: 2017-07-21T17:40:32Z
           external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-          phone_number:
-            country_code: "+1"
-            number: "2068133616"
           email: david.vincent@courriel.ml
           _links:
             self:
@@ -302,20 +300,20 @@ components:
           image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
+        phone_number:
+          country_code: "+1"
+          number: "2068133616"
         _links:
           self:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
           applicant:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
-          active_attempt_link:
+          active_link:
             href: "https://id.ubble.ai/4hryu5cei5/"
 
     applicant_creation_request_body:
       value:
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-        phone_number:
-          country_code: "+1"
-          number: "2068133616"
         email: david.vincent@courriel.ml
 
     applicant_creation_response_body:
@@ -331,9 +329,6 @@ components:
         created_on: 2017-07-21T17:32:28Z
         modified_on: 2017-07-21T17:40:32Z
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
-        phone_number:
-          country_code: "+1"
-          number: "2068133616"
         email: david.vincent@courriel.ml
         _links:
           self:
@@ -348,29 +343,6 @@ components:
         country: US
 
   schemas:
-    IdentityVerificationCreationRequestBody:
-      type: object
-      required: [business_path_id, declared_data, webhook_url, redirect_url]
-      properties:
-        business_path_id:
-          readOnly: false
-          allOf:
-            - $ref: "#/components/schemas/BusinessPathId"
-        applicant:
-          # instead of using a separate body schema use polymorphism and discriminator ?
-          # https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
-          oneOf:
-            - $ref: "#/components/schemas/Applicant"
-            - $ref: "#/components/schemas/ApplicantRelation"
-        declared_data:
-          $ref: "#/components/schemas/DeclaredData"
-        webhook_url:
-          type: string
-          format: uri
-        redirect_url:
-          type: string
-          format: uri
-
     IdentityVerificationCreationResponseBody:
       type: object
       required: [id, _links]
@@ -385,7 +357,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/SelfLink"
         - $ref: "#/components/schemas/ApplicantLink"
-        - $ref: "#/components/schemas/ActiveAttemptLink"
+        - $ref: "#/components/schemas/ActiveLink"
 
     IdentityVerification:
       type: object
@@ -412,22 +384,28 @@ components:
         ]
       properties:
         business_path_id:
-          $ref: "#/components/schemas/BusinessPathId"
+          readOnly: false
+          allOf:
+            - $ref: "#/components/schemas/BusinessPathId"
+        applicant_id:
+          readOnly: false
+          allOf:
+            - $ref: "#/components/schemas/ApplicantId"
         status:
           $ref: "#/components/schemas/VerificationStatues"
         reason_codes:
           type: array
+          readOnly: true
           minItems: 0
           items:
             $ref: "#/components/schemas/ReasonCode"
-        applicant:
-          $ref: "#/components/schemas/Applicant"
         verified_identity:
           $ref: "#/components/schemas/Identity"
         declared_data:
           $ref: "#/components/schemas/DeclaredData"
         documents:
           type: array
+          readOnly: true
           minItems: 0
           maxItems: 2
           items:
@@ -460,6 +438,7 @@ components:
     Document:
       type: object
       required: [document_type, first_name, last_name, front_image_signed_url]
+      readOnly: true
       properties:
         document_type:
           $ref: "#/components/schemas/DocumentTypes"
@@ -484,6 +463,7 @@ components:
       type: object
       required:
         [first_names, last_name, birth_date, birth_place, nationality, gender]
+      readOnly: true
       properties:
         first_names:
           type: string
@@ -511,6 +491,7 @@ components:
     Face:
       type: object
       required: [image_signed_url]
+      readOnly: true
       properties:
         image_signed_url:
           type: string
@@ -524,11 +505,11 @@ components:
         applicant:
           $ref: "#/components/schemas/HalLink"
 
-    ActiveAttemptLink:
+    ActiveLink:
       type: object
-      required: [active_attempt_link]
+      required: [active_link]
       properties:
-        active_attempt_link:
+        active_link:
           $ref: "#/components/schemas/HalLink"
 
     ApplicantRelation:
@@ -541,26 +522,39 @@ components:
 
     Applicant:
       type: object
+      required: [id]
       properties:
         id:
           $ref: "#/components/schemas/ApplicantId"
       allOf:
         - $ref: "#/components/schemas/DatedObject"
         - $ref: "#/components/schemas/BaseApplicant"
+        - $ref: "#/components/schemas/ApplicantsLinks"
+
+    ApplicantCreationResponse:
+      allOf:
+        - type: object
+          required: [id]
+          properties:
+            id:
+              $ref: "#/components/schemas/ApplicantId"
+        - $ref: "#/components/schemas/ApplicantsLinks"
 
     BaseApplicant:
       type: object
-      required: [id, _links]
       properties:
         external_applicant_id:
           type: string
           example: "ext_osdfdfdb4hryu5cei5vwoabrk5k"
-        phone_number:
-          $ref: "#/components/schemas/PhoneNumber"
         email:
           type: string
           format: email
           example: david.vincent@courriel.ml
+
+    ApplicantsLinks:
+      type: object
+      required: [_links]
+      properties:
         _links:
           $ref: "#/components/schemas/SelfLink"
 
@@ -586,6 +580,7 @@ components:
     VerificationStatues:
       type: string
       description: Status of the identity verification.
+      readOnly: true
       enum:
         - pending
         - in_progress
@@ -608,6 +603,7 @@ components:
     ReasonCode:
       type: integer
       description: Code indicating why a verification could not be approved.
+      readOnly: true
       minimum: 1000
       maximum: 2999
 
@@ -726,20 +722,3 @@ components:
           format: date-time
           example: 2017-07-21T17:40:32Z
           readOnly: true
-
-  requestBodies:
-    IdentityVerificationCreationRequestBody:
-      description: Identity verification request body.
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/IdentityVerificationCreationRequestBody"
-
-  responses:
-    IdentityVerificationOutput:
-      description: Identity verification response.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"

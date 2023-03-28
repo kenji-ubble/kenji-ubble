@@ -359,7 +359,7 @@ components:
           # https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/
           oneOf:
             - $ref: "#/components/schemas/Applicant"
-            - $ref: "#/components/schemas/ApplicantRelationCreationBody"
+            - $ref: "#/components/schemas/ApplicantRelation"
         declared_data:
           $ref: "#/components/schemas/DeclaredData"
         webhook_url:
@@ -371,6 +371,7 @@ components:
 
     IdentityVerificationCreationResponseBody:
       type: object
+      required: [id, _links]
       properties:
         id:
           $ref: "#/components/schemas/IdentityVerificationId"
@@ -519,7 +520,7 @@ components:
         active_attempt_link:
           $ref: "#/components/schemas/HalLink"
 
-    ApplicantRelationCreationBody:
+    ApplicantRelation:
       type: object
       properties:
         id:

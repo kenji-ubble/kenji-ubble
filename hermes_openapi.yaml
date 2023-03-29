@@ -11,31 +11,14 @@ info:
     # API standards
 
     ## Authentication
-    The Ubble API uses two types of authentication. For standard accounts Basic authenication is used,
-    and for certified accounts mutual TLS authentication in addition to Basic Authentication is used.
-    Basic authentication credentials and mutual TLS authentication certificates can be managed in the
-    client dashboard or by your account manager.
+    We use both mutual TLS and basic authentication. You must then authenticate your calls by including your
+    secret credentials as well as your client certificate and key in API requests.
 
-    ### Basic Authentication
-    You must authenticate your calls by including your secret credentials in API requests.
-    You can manage your credentials with your account manager. Your credentials carry many privileges,
-    so be sure to keep them secure. Do not share your secret API keys in publicly accessible areas such as
-    GitHub, client-side code, and so forth.
+    Make sure you have an account with us. Once you've signed in, navigate to Organisation > Credentials and
+    create your credential and certificates.
 
-    Requests are authenticated using HTTP Basic Auth. Provide your CLIENT_ID and CLIENT_SECRET as the Basic Auth username and password.
-
-    All API requests must be made over HTTPS as calls made over plain HTTP will fail. API requests without authentication will also fail.
-
-    ### Mutual TLS Authentication
-    You must authenticate your calls by including your secret credentials as well as your client certificate and key in API requests.
-    You can manage your credentials and certificates with your account manager. Your credentials and certificates carry many privileges,
-    so be sure to keep them secure. Do not share your secret API keys or API certificates in publicly accessible areas such as GitHub,
-    client-side code, and so forth.
-
-    Requests are authenticated using HTTP Basic Auth and/or mutual TLS Provide your CLIENT_ID and CLIENT_SECRET as the Basic Auth username
-    and password. Provide your client certificate and client key as the mutual TLS certificate authentication.
-
-    All API requests must be made over HTTPS as calls made over plain HTTP will fail. API requests without authentication will also fail.
+    Your credentials and certificates carry many privileges, so be sure to keep them secure. Do not share your
+    secret API keys or API certificates in publicly accessible areas such as GitHub, client-side code, and so forth. 
 
     ## Required tag
     ### required
@@ -130,7 +113,7 @@ paths:
             schema:
               $ref: "#/components/schemas/IdentityVerification"
       responses:
-        "201":
+        "202":
           description: Identity verification created
           content:
             application/json:
@@ -143,7 +126,7 @@ paths:
                   - $ref: "#/components/schemas/IdentityVerification"
       callbacks:
         statusChanged:
-          '{$request.body#/webhook_url}':
+          'WIP - {$request.body#/webhook_url}':
             post:
               requestBody:
                 required: true
@@ -160,6 +143,32 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+
+  /identity-verifications/{identity_verification_id}/retry:
+    post:
+      tags:
+        - identity verifications
+      summary: WIP - Retry an identity verification
+      description: WIP - Retry an identity verification.
+      operationId: retry_identity_verification
+      requestBody:
+        description: WIP - Retry an identity verification
+        required: true
+        content:
+          application/json:
+            examples:
+              Only required data (creates a new applicant):
+                $ref: "#/components/examples/identity_verification_creation_request_body_min"
+              All possible data (uses an existing applicant):
+                $ref: "#/components/examples/identity_verification_creation_request_body_max"
+      responses:
+        "200":
+          description: Identity verification created
+          content:
+            application/json:
+              examples:
+                identity_verification_creation_response_body:
+                  $ref: "#/components/examples/identity_verification_response_body"
 
   /identity-verifications/{identity_verification_id}:
     get:

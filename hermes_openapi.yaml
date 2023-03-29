@@ -53,10 +53,9 @@ info:
     | ressource name         | prefix | example                         |
     |------------------------|--------|---------------------------------|
     | applicants             | apl    | apl_tkoi5db4hryu5cei5vwoabr7we  |
-    | attempts               | atp    | atp_tkoi5db4hryu5cei5vwoabr7we  |
-    | business-paths         | bupa   | bupa_tkoi5db4hryu5cei5vwoabr7we |
     | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
     | organization           | org    | org_tkoi5db4hryu5cei5vwoabr7we  |
+    | user-journey           | usj    | usj_tkoi5db4hryu5cei5vwoabr7we  |
 
     ## Content type
     The API accepts and returns `application/json` type.
@@ -139,7 +138,26 @@ paths:
                 identity_verification_creation_response_body:
                   $ref: "#/components/examples/identity_verification_creation_response_body"
               schema:
-                $ref: "#/components/schemas/IdentityVerificationCreationResponseBody"
+                $ref: "#/components/schemas/IdentityVerification"
+      callbacks:
+        statusChanged:
+          '{$request.body#/webhook_url}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: Some event happened
+                      required:
+                        - message
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
 
   /identity-verifications/{identity_verification_id}:
     get:
@@ -185,14 +203,14 @@ paths:
 
       responses:
         "201":
-          description: Created
+          description: Applicant successfully created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApplicantCreationResponse"
+                $ref: "#/components/schemas/Applicant"
               examples:
                 Always replies:
-                  $ref: "#/components/examples/applicant_creation_response_body"
+                  $ref: "#/components/examples/applicant_response_body"
         "400":
           description: Bad request
           content:
@@ -209,8 +227,8 @@ paths:
     get:
       tags:
         - applicants
-      summary: Find an Applicant by ID
-      description: Returns a single Applicant
+      summary: Retrieve an Applicant by ID
+      description: Retrieve an Applicant by ID
       operationId: retrieve_applicant_by_id
       parameters:
         - name: applicant_id
@@ -221,22 +239,22 @@ paths:
             $ref: "#/components/schemas/ApplicantId"
       responses:
         "200":
-          description: successful operation
+          description: applicant retrieved succesfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Applicant"
               examples:
                 Always replies:
-                  $ref: "#/components/examples/applicant_retrieval_response_body"
+                  $ref: "#/components/examples/applicant_response_body"
         "404":
-          description: Applicant not found
+          description: "[WIP] Applicant not found"
 
 components:
   examples:
     identity_verification_creation_request_body_max:
       value:
-        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
+        user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
         applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
           first_name: David
@@ -250,7 +268,7 @@ components:
 
     identity_verification_creation_request_body_min:
       value:
-        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
+        user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
           first_name: David
           last_name: Vincent
@@ -271,7 +289,7 @@ components:
     identity_verification_retrieval_response_body:
       value:
         id: idv_tkoi5db4hryu5cei5vwoabr7we
-        business_path_id: bupa_tkoi5db4hryu5cei5vwoabr7we
+        user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
         status: declined
         reason_codes: [1003, 2001]
         applicant:
@@ -316,18 +334,12 @@ components:
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
         email: david.vincent@courriel.ml
 
-    applicant_creation_response_body:
-      value:
-        id: apl_tkoi5db4hryu5cei5vwoabr7we
-        _links:
-          self:
-            href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
-
-    applicant_retrieval_response_body:
+    applicant_response_body:
       value:
         id: apl_tkoi5db4hryu5cei5vwoabr7we
         created_on: 2017-07-21T17:32:28Z
         modified_on: 2017-07-21T17:40:32Z
+        organization_id: org_tkoi5db4hryu5cei5vwoabr7we
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
         email: david.vincent@courriel.ml
         _links:
@@ -373,7 +385,7 @@ components:
       type: object
       required:
         [
-          business_path_id,
+          user_journey_id,
           applicant,
           declared_data,
           status,
@@ -383,7 +395,7 @@ components:
           _links,
         ]
       properties:
-        business_path_id:
+        user_journey_id:
           readOnly: false
           allOf:
             - $ref: "#/components/schemas/BusinessPathId"
@@ -521,23 +533,18 @@ components:
             - $ref: "#/components/schemas/ApplicantId"
 
     Applicant:
-      type: object
-      required: [id]
-      properties:
-        id:
-          $ref: "#/components/schemas/ApplicantId"
-      allOf:
-        - $ref: "#/components/schemas/DatedObject"
-        - $ref: "#/components/schemas/BaseApplicant"
-        - $ref: "#/components/schemas/ApplicantsLinks"
-
-    ApplicantCreationResponse:
+      required: [id, organization_id]
       allOf:
         - type: object
-          required: [id]
           properties:
             id:
               $ref: "#/components/schemas/ApplicantId"
+        - $ref: "#/components/schemas/DatedObject"
+        - type: object
+          properties:
+            organization_id:
+              $ref: "#/components/schemas/OrganizationId"
+        - $ref: "#/components/schemas/BaseApplicant"
         - $ref: "#/components/schemas/ApplicantsLinks"
 
     BaseApplicant:
@@ -614,6 +621,13 @@ components:
       example: apl_tkoi5db4hryu5cei5vwoabr7we
       readOnly: true
 
+    OrganizationId:
+      type: string
+      description: Applicant unique identifier.
+      pattern: ^apl_\w+$
+      example: apl_tkoi5db4hryu5cei5vwoabr7we
+      readOnly: true
+
     IdentityVerificationId:
       type: string
       description: Identity verification unique identifier.
@@ -625,7 +639,7 @@ components:
       type: string
       description: Business path unique identifier.
       pattern: ^bupa_\w+$
-      example: bupa_tkoi5db4hryu5cei5vwoabr7we
+      example: usj_tkoi5db4hryu5cei5vwoabr7we
       readOnly: true
 
     Address:

@@ -6,19 +6,266 @@ info:
     url: "https://www.ubble.ai/wp-content/uploads/2021/08/Combo_Ubble_Logo_Exe_RVB-1-1-e1627891718121.png"
   description: |
     # Introduction
-    Hermes is the identity verification API.
+    Welcome to Ubble's API documentation !
 
-    # API standards
+    This API enables you to build a seamless identity verification experience for your customers.
+
+    # Before you start
 
     ## Authentication
-    We use both mutual TLS and basic authentication. You must then authenticate your calls by including your
-    secret credentials as well as your client certificate and key in API requests.
+    We use both mutual TLS and basic authentication. You must then authenticate your calls by including your secret credentials as well as your client certificate and key in API requests.
 
-    Make sure you have an account with us. Once you've signed in, navigate to Organisation > Credentials and
-    create your credential and certificates.
+    Make sure you have an account with us. Once you've signed in, navigate to Organisation > Credentials and create your credential and certificates.
 
-    Your credentials and certificates carry many privileges, so be sure to keep them secure. Do not share your
-    secret API keys or API certificates in publicly accessible areas such as GitHub, client-side code, and so forth. 
+    Your credentials and certificates carry many privileges, so be sure to keep them secure. Do not share your secret API keys or API certificates in publicly accessible areas such as GitHub, client-side code, and so forth.
+
+    ## Webhook
+    You will also need to define a webhook when generating an identity verification. It will enable you to be notified of each event, and to get the results of the verification when it is completed.
+
+    For security reason all our webhook calls are signed, can be whitelisted or can even request an authentication. You will find all details about webhook implementation in the dedicated section.
+
+    ## Redirect URL
+    Finally you will need to provide a redirect URL. This URL will be used to redirect the applicant at the end of the verification. You will find more details on the way to manage applicant return in the dedicated section.
+
+    # Get Started
+    This section describes the easiest way to integrate our API. At the end of this section you will be able to create and get the results of identity verification.
+
+    ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/doc_diagram.png)
+
+    ## Step 1 : Request an identity verification
+    This first step is to request an identity verification.
+
+    You will have to include the declared first name and last name of the applicant in you call, as well as the webhook and redirect URL you should have prepared before. All the details to create an identity verification can be found in the endpoint section.
+
+    The call will return an identity verification object. It will include the unique identifier of the identity verification, and we strongly advice you to store it in your backend because you will need it to get the detailed results.
+
+    ## Step 2 : Redirect the applicant
+    The identity verification object also includes the link you will have to use to redirect applicants to our web application.
+
+    At this step, we strongly advice you to use web redirection. We've built an integration example showcasing how to integrate Ubble in a web app: [ubble-express-integration](https://github.com/ubbleai/integration_examples/tree/master/web).
+
+    All the details to use another integration can be found in the technical integration section.
+
+    ## Step 3 : Manage the applicant return
+    When applicants terminate the verification, they are redirected to the redirect_url you have defined when creating the identity verification.
+
+    The verification process can be synchronous or asynchronous, and so the results may not be available when the applicant is redirected. At this step, we advice you to create a waiting page.
+
+    All the details to manage the applicant return can be found in the applicant return section.
+
+    ## Step 4 : Make your decision
+    Thanks to the webhook you have defined you will be notified of each event regarding the identity verification.
+
+    The webhook body will include the event type as well as the `status` of the identity verification. At this step, you should wait for the `status` to be one of `approved`, `declined` or `retry_required`.
+
+    If the `status` is `approved`, you should accept the applicant request.
+
+    If the `status` is `declined`, you should refuse it.
+
+    If the `status` is `retry_required`, you should request a retry and to redirect the applicant on the new link you will get. All the detail to request a retry can be found in the endpoint section.
+
+    All the details about the identity verification results can be found in the dedicated section.
+
+    ## Step 5 : Get the detailed results
+    You may have to get the detailed results, particularly when the verification is `approved`.
+
+    All the details to retrieve an identity verification can be found in the endpoint section. You will only need the unique identifier you got when creating the identity verification.
+
+    You can also get these results in a pdf format through dedicated endpoint.
+
+    # Web application integration
+    As mentioned in the get started, applicants should be redirected toward our web application to perform the verification. In this section you will find all the information you need to make this redirection as seamless as possible.
+
+    ## User journey customization
+    To properly integrate the identity verification, you should customize the user journey with your solution engineer. You will be able to define : colors, logo, font, button radius and introduction sentence as detailed here : [Customize your Ubble experience](https://www.ubble.ai/en/custom-experience/).
+
+    If you need it, you can create several user journey. They will all be linked to your organisation and you will have to define the user_journey_id when creating an identity verification.
+
+    ## Technical integration
+
+    ### Web Redirection
+    You can redirect applicant using web redirection. We support all the major browsers current versions.
+
+    We've built an integration example showcasing how to integrate Ubble in a web app:
+
+    - [ubble-express-integration](https://github.com/ubbleai/integration_examples/tree/master/web)
+
+    Web Redirection is compatible with the following browsers / OS. We do not ensure the compatibility of our service with beta versions of browsers / OS.
+
+    | Desktop      | Chrome | Firefox | Safari | Internet Explorer | Edge | Opera |
+    |--------------|--------|---------|--------|-------------------|------|-------|
+    | Min. Version | ≥ 53   | ≥ 52    | ≥ 11.1 | -                 | ≥ 16 | ≥ 58  |
+
+    | Android      | Chrome for Android | Firefox for Android | Samsung Internet | IE Mobile |
+    |--------------|--------------------|---------------------|------------------|-----------|
+    | Min. Version | ≥ 73               | ≥ 66                | ≥ 6.2            | -         |
+
+    | iOS          | Safari Mobile | Chrome | All other browsers |
+    |--------------|---------------|--------|--------------------|
+    | Min. Version | ≥ 11.0        | ≥ 14.3 | -                  |
+
+    To integrate Ubble in your website, create an identity verification in your backend, pass the URL to your web app and simply add it as a link :
+
+    ```html
+      <a href="`${identificationUrl}`"></a>
+    ````
+
+    ### Webview integration
+    For a more integrated user experience in your mobile application, you can redirect the applicant using a webview.
+
+    Here is the list of integration examples that we've built for you :
+
+    - [iOS >= 13](https://github.com/ubbleai/integration_examples/tree/master/ios), on **iOS >= 14.3** WebRTC features work perfectly inside the [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview).
+    - [android - webview version >= 53](https://github.com/ubbleai/integration_examples/tree/master/android)
+    - [react-native - react-native webview >= 8.0](https://github.com/ubbleai/integration_examples/tree/master/UbbleReactNative)
+
+    On iOS <= 12, due to limited webview compatibility, Ubble verification process must be completed in Safari App.
+
+    For iOS Native you will have to open safari using the open method:
+
+    ```swift
+    UIApplication.shared.open(identificationUrl, options: [:])
+    ```
+
+    ### Flutter
+
+    If you wish to use Ubble with Flutter, you can use the [flutter_inappwebview](https://inappwebview.dev/docs/).
+
+    Make sure to follow the [WebRTC API](https://inappwebview.dev/docs/webrtc-api/) section of the documentation to ensure we're able to launch a video stream.
+
+    ### Iframe integration
+    When using the Desktop-to-Mobile redirection flow, we recommend that you use our Iframe integration on **desktop** described below:
+
+    Include the SDK as a script tag.
+
+    If you need an example of Iframe usage, you can use our [iframe tester](https://ubbleai.github.io/iframe-tester/)
+
+    ```JS
+    <script
+      src="https://cdn.ubble.ai/iframe-sdk-0.0.3.js"
+      type="application/javascript"
+    ></script>
+    ```
+
+    We expect your page to implement a global method `onUbbleReady` that will be triggered when the SDK is loaded
+
+    ```JS
+    function onUbbleReady() {}
+    ```
+
+    Initialize a new Ubble IDV object:
+
+    ```JS
+    function onUbbleReady() {
+      const ubbleIDV = new Ubble.IDV(document.getElementById("ubble"), options);
+    }
+    ```
+
+    ### API
+
+    `elementId`: string | Element
+    ```JS
+    new Ubble.IDV("ubble", options);
+    new Ubble.IDV(document.getElementById("ubble"), options);
+    ```
+
+    `options` Object
+    - `width`: Iframe width in px
+    - `height`: Iframe height in px
+    - `allowCamera`: Boolean, indicating whether you want to capture video inside the iframe. This field should be false if you redirect the applicants via Desktop-to-Mobile redirection
+    - `identificationUrl`: Identification url (e.g. Ubble ) events:
+    - `onComplete(completeEvent)`: Event triggered when the applicant completes the identification
+
+    ```json
+    {
+      "status": "processing",
+      "redirectUrl": "https://your-redirect-url.com?identification_id=<ubble identification id>"
+    }
+    ```
+
+    - `onAbort(abortEvent)`: Event triggered when the applicant aborts the identification
+
+    ```json
+    {
+      "status": "aborted",
+      "returnReason": "NO_DOCUMENT",
+      "redirectUrl": "https://your-redirect-url.com?identification_id=<ubble identification id>"
+    }
+    ```
+
+    - onExpired: Event triggered when the applicant's identification has expired
+
+    ```json
+    {
+      "status": "expired",
+      "redirectUrl": "https://your-redirect-url.com?identification_id=<ubble identification id>"`
+    }
+    ```
+
+
+    ### Methods
+
+    `destroy()`
+
+    ```JS
+    const ubbleIDV = new Ubble.IDV("id", {
+      events: {
+        onComplete(event) {
+          console.log(`Done with ubble flow: ${event}`);
+          ubbleIDV.destroy();
+        },
+      },
+    });
+    ```
+
+    ### Full example
+
+    ```JS
+    const ubbleIDV = new Ubble.IDV("idv", {
+      width: "500",
+      height: "600",
+      allowCamera: true,
+      identificationUrl: "https://id.ubble.ai/11111111-1111-1111-1111-111111111111",
+      events: {
+        onComplete(event) {
+          ubbleIDV.destroy();
+        },
+        onAbort(event) {
+          ubbleIDV.destroy();
+        },
+        onExpired(event) {
+          ubbleIDV.destroy();
+        }
+      },
+    });
+    ```
+
+    ### Known Issues
+
+    - Make sure you did not forget to add a semicolon in the header `Content-Security-Policy: frame-src https://*.domain_name.fr;`
+    - Make sure beforehand the use of the camera has been allowed
+
+    ## Mobile redirection
+    Both for security reason and because it improves the conversion rate, we redirect all applicants from desktop to mobile. Nevertheless we ensure a synchronisation between desktop and mobile to redirect applicants to their desktop at the end of the journey.
+
+    Applicants can use either QR code or SMS sending to perform this redirection. To make the SMS redirection smoother, you can send us the phone number of the applicant when creating an identity verification : we use it to prefill the associated field during the redirection. Fore more details see the identity verification endpoint.
+
+    ## Applicant return
+    As mentioned in the get started section, applicants are redirected to the redirect URL you defined when they terminated the journey.
+
+    This redirection is associated with an event that you will find both in the webhook notification and as a parameter in the redirect URL.
+
+    This event can be :
+
+    - `capture_completion` : the applicant has completed the capture.
+
+    In this case, 
+
+    `capture_abortion` :  the applicant has terminated the session without completing it.
+
+    This information will be available in the webhook and as a parameter in the redirect URL.
+
+    # API standards
 
     ## Required tag
     ### required
@@ -72,9 +319,6 @@ info:
     | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s) |  {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> } |
     | date-time    | - Apply ISO8601<br /> - always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
 
-    # Verification flow
-    ## Verification status state diagram
-    ![cached image](https://plantuml-server.kkeisuke.dev/svg/TL91Zi8m3Bpd5PQu8NKVm07n2Yu8LI4rnLAQPXs7NNwFeHIbjDmIpqncFCekYMN9dJT6I3p27fdEvAnG7tuKb9oWWiS1eI7RiksC6QuHGqEXXPMdzY8dd_45KAWZzorZIdCmu5_jR9JCM3F-Pc9ivYmRzONh4jAWynIcY3ciZr1jnqGRS8mFxhLOnennbLS4tC2pWIzKvIxbLODX0lWVYGVHuc9LcOfH-3PrAglwxbPADBphk-XHSAhUlalx40nZwsTcOvKVVCPpJaetEmskN-CE.svg)
   version: 2.0.0
 
 servers:
@@ -113,7 +357,7 @@ paths:
             schema:
               $ref: "#/components/schemas/IdentityVerification"
       responses:
-        "202":
+        "201":
           description: Identity verification created
           content:
             application/json:
@@ -126,7 +370,7 @@ paths:
                   - $ref: "#/components/schemas/IdentityVerification"
       callbacks:
         statusChanged:
-          'WIP - {$request.body#/webhook_url}':
+          "WIP - {$request.body#/webhook_url}":
             post:
               requestBody:
                 required: true
@@ -141,7 +385,7 @@ paths:
                       required:
                         - message
               responses:
-                '200':
+                "200":
                   description: Your server returns this code if it accepts the callback
 
   /identity-verifications/{identity_verification_id}/retry:
@@ -361,14 +605,7 @@ components:
     IdentityVerificationBase:
       type: object
       required:
-        [
-          declared_data,
-          status,
-          reason_codes,
-          webhook_url,
-          redirect_url,
-          _links,
-        ]
+        [declared_data, status, reason_codes, webhook_url, redirect_url, _links]
       properties:
         user_journey_id:
           readOnly: false

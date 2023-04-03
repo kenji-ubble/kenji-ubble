@@ -133,6 +133,31 @@ info:
 
     Make sure to follow the [WebRTC API](https://inappwebview.dev/docs/webrtc-api/) section of the documentation to ensure we're able to launch a video stream.
 
+    ### Applicant return
+    Applicants are redirected to the redirect URL you defined when they terminated the journey. In webview integration, we are expecting a deeplink to redirect the applicant on your mobile application. 
+
+    The return is associated with an event that you will find both in the webhook notification and as a parameter in the redirect URL. 
+
+    Example of redirect URL:
+
+    `?id=123&event=capture_abortion&reason_codes=[1201]`
+
+    This event can be: 
+    
+    - `capture_completion`: the applicant has completed the capture. 
+
+    In this case you will have to wait for the next event to make you decision. You can either ask applicants to perform additional checks, or make them wait until results are available. 
+
+    Please also note that in some cases the `check_completion` event can occur almost simultaneously, and consequently the results can be available when the applicant is redirected. 
+
+    - `capture_abortion`:  the applicant terminated the capture without completing it. 
+
+    In this case we advice you to request a retry. See the dedicated section to implement it. 
+
+    - `capture_refusal`: the applicant explicitly refused to perform the capture. 
+
+    In this case we advice you to propose an alternative to the applicant. 
+
     ### Iframe integration
     When using the Desktop-to-Mobile redirection flow, we recommend that you use our Iframe integration on **desktop** described below:
 
@@ -250,21 +275,23 @@ info:
 
     Applicants can use either QR code or SMS sending to perform this redirection. To make the SMS redirection smoother, you can send us the phone number of the applicant when creating an identity verification : we use it to prefill the associated field during the redirection. Fore more details see the identity verification endpoint.
 
-    ## Applicant return
-    As mentioned in the get started section, applicants are redirected to the redirect URL you defined when they terminated the journey.
+    # Identity verification results
 
-    This redirection is associated with an event that you will find both in the webhook notification and as a parameter in the redirect URL.
+    ## Lifecycle
 
-    This event can be :
+    To make your decision you should mainly use events and status. This information is directly available in the webhook body.
+    
+    ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/life%20cycle%20diagram.png)
 
-    - `capture_completion` : the applicant has completed the capture.
+    ## Events
+    An event is a change in the verification lifecycle that triggers a notification.
 
-    In this case, 
+    # WIP
 
-    `capture_abortion` :  the applicant has terminated the session without completing it.
+    # Applicants
 
-    This information will be available in the webhook and as a parameter in the redirect URL.
-
+    # Webhooks
+    
     # API standards
 
     ## Required tag

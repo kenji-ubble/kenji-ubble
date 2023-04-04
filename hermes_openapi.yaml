@@ -317,13 +317,240 @@ info:
 
     When the status is retry_required, declined or refused you will also get additional information in the webhook body with the reason_codes. You will find below the exhaustive list of reason_codes. 
 
-    !!! warning "warning"
-      Please note that we consider adding new reason codes as backward compatible. 
-      You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
+    > **warning:** Please note that we consider adding new reason codes as backward compatible. 
+    > You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
 
+    <style type="text/css">
+    .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+    .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+      font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+      font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+    .tg .tg-dvid{background-color:#efefef;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+    .tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+    .tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+    .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+    </style>
+    <table class="tg">
+    <thead>
+      <tr>
+        <th class="tg-fymr">OR string<br></th>
+        <th class="tg-fymr">Description<br></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tg-y698" colspan="2"><span style="font-weight:bold">Status</span>: <code>refused</code></td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_refusal</td>
+        <td class="tg-0pky">applicant explicitly refused to do the verification process</td>
+      </tr>
+      <tr>
+        <td class="tg-y698" colspan="2"><span style="font-weight:bold">Status</span>: <code>retry_required</code></td>
+      </tr>
+      <tr>
+        <td class="tg-y698" colspan="2"><span style="font-weight:bold">applicant readiness issue</span></td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_not_redirected</td>
+        <td class="tg-0pky">applicant never started the attempt</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_not_ready</td>
+        <td class="tg-0pky">applicant wants to perform the identity verification later</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_no_document</td>
+        <td class="tg-0pky">applicant did not have their document with him</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_refused_camera_access</td>
+        <td class="tg-0pky">applicant did not give access to the camera</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_left_before_capture</td>
+        <td class="tg-0pky">applicant left the process before the capture phase</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">applicant_left_during_capture</td>
+        <td class="tg-0pky">applicant left the process during the capture phase</td>
+      </tr>
+      <tr>
+        <td class="tg-y698" colspan="2">   </td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">technical_connexion_insufficient</td>
+        <td class="tg-0pky">applicant did not have a sufficient connexion</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">technical_browser_incompatible</td>
+        <td class="tg-0pky">applicant’s browser was not suitable for video streaming</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">technical_camera_absent</td>
+        <td class="tg-0pky">applicant’s device did not have any camera</td>
+      </tr>
+      <tr>
+        <td class="tg-dvid" colspan="2">Manipulation issue</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_blurry</td>
+        <td class="tg-0pky">applicant’s document video is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_front_absent</td>
+        <td class="tg-0pky">applicant has not presented the front of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_back_absent</td>
+        <td class="tg-0pky">applicant has not presented the back of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_partially_hidden</td>
+        <td class="tg-0pky">applicant hides part of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_no_movement</td>
+        <td class="tg-0pky">applicant did not present a dynamic view of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_document_challenge_failed</td>
+        <td class="tg-0pky">applicant did not follow the instructions when submitting their document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_face_blurry</td>
+        <td class="tg-0pky">applicant’s video of their face is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_face_absent</td>
+        <td class="tg-0pky">applicant has not presented a face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_face_partially_hidden</td>
+        <td class="tg-0pky">applicant did not show the full front view of their face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_face_no_movement</td>
+        <td class="tg-0pky">applicant did not move to prove the liveness</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_face_challenge_failed</td>
+        <td class="tg-0pky">applicant did not follow the instructions when submitting their face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">manipulation_lighting_issue</td>
+        <td class="tg-0pky">applicant performed their id verification under poor lighting conditions</td>
+      </tr>
+      <tr>
+        <td class="tg-y698" colspan="2">   </td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">internal_error</td>
+        <td class="tg-0pky">Internal error</td>
+      </tr>
+      <tr>
+        <td class="tg-y698" colspan="2"><span style="font-weight:bold">Status</span>: <code>declined</code></td>
+      </tr>
+      <tr>
+        <td class="tg-dvid" colspan="2">Document issue</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">document_expired</td>
+        <td class="tg-0pky">applicant presented an expired document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">document_not_accepted</td>
+        <td class="tg-0pky">applicant presented a document which is not accepted</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">document_damaged</td>
+        <td class="tg-0pky">applicant has submitted a damaged document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">document_photocopy</td>
+        <td class="tg-0pky">applicant presented a photocopy of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">document_screenshot</td>
+        <td class="tg-0pky">applicant presented the document on a screen</td>
+      </tr>
+      <tr>
+        <td class="tg-dvid" colspan="2">Identity fraud</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_document_counterfeit</td>
+        <td class="tg-0pky">applicant has submitted a counterfeit or falsification</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_document_stolen</td>
+        <td class="tg-0pky">applicant presented a document declared as stolen or lost</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_document_swap</td>
+        <td class="tg-0pky">applicant presented the front and back of two different documents</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_face_mismatch</td>
+        <td class="tg-0pky">applicant is not the rightful owner of the document</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_face_not_live</td>
+        <td class="tg-0pky">applicant presented another person's face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_face_alteration</td>
+        <td class="tg-0pky">applicant has altered his/her appearance</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_videos_alteration</td>
+        <td class="tg-0pky">applicant has digitally altered the videos</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">fraud_generic</td>
+        <td class="tg-0pky">Generic code when a fraud has been detected within a certified identity verification</td>
+      </tr>
+      <tr>
+        <td class="tg-dvid" colspan="2">Suspicious behavior</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">suspicious_declared_identity</td>
+        <td class="tg-0pky">applicant’s identity does not match with the expected one</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">suspicious_device</td>
+        <td class="tg-0pky">applicant used a device that has been technically altered</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">suspicious_consent</td>
+        <td class="tg-0pky">applicant did not seem to consent to the verification</td>
+      </tr>
+    </tbody>
+    </table>
 
+    ## Retry management 
+    When the status of the identity verification is retry_required we advice you to request a retry. You will need the identity_verification_id, as well as a webhook and a redirect URL. 
+
+    All information to request a retry can be found in the endpoint section. 
+
+    We strongly advice you to use the reason_codes to guide the applicant toward success. For example, if the reason codes indicate that the connection of the applicant is not sufficient, you should give this information to the applicant. 
+
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
+      <div style="margin-right: 10px; font-size: 24px; color: #f8c92e;">⚠️</div>
+      <div style="display: table-cell; vertical-align: top;">
+        <p>Please note that you cannot request a retry if the status is declined. If you still want to onboard the concerned applicant, you should request a new verification and indicate the applicant_id. For more details see the applicant section.</p>
+      </div>
+    </div>
+
+    ## WIP - Detailed results
+
+    ## Data management
 
     # Applicants
+
+    ## Creation
+    ## Applicant file 
+    ## Data comparison
 
     # Webhooks
 
@@ -454,27 +681,55 @@ paths:
     post:
       tags:
         - identity verifications
-      summary: WIP - Retry an identity verification
-      description: WIP - Retry an identity verification.
+      summary: Retry an identity verification
+      description: |
+        This endpoint allows you to retry a identification verification with the `retry_required` status.
+
+        You will need to provide the ID of the failed verification in the URL.
+
+        The verification will be retried using the same parameters as the original attempt.
+        You can override:
+        - phone_number
+        - webhook_url
+        - redirect_url
+
+        If the verification status is not `retry_required`, this endpoint will return an error.
+
+        The on success, the enpoint returns a `200` and the IdentityVerification ressource containing the new `_links/verification_url`
+
       operationId: retry_identity_verification
       requestBody:
-        description: WIP - Retry an identity verification
-        required: true
+        description: Retry an identity verification
         content:
           application/json:
             examples:
-              Only required data (creates a new applicant):
-                $ref: "#/components/examples/identity_verification_creation_request_body_min"
-              All possible data (uses an existing applicant):
-                $ref: "#/components/examples/identity_verification_creation_request_body_max"
+              Empty body accepted:
+                $ref: "#/components/examples/identity_verification_retry_request_body_min"
+              All possible data:
+                $ref: "#/components/examples/identity_verification_retry_request_body_max"
+            schema:
+              $ref: "#/components/schemas/IdentityVerificationRetryRequest"
+
       responses:
         "200":
-          description: Identity verification created
+          description: The verification has been retried successfully
           content:
             application/json:
               examples:
                 identity_verification_creation_response_body:
                   $ref: "#/components/examples/identity_verification_response_body"
+              schema:
+                required: [applicant_id, user_journey_id, phone_number]
+                allOf:
+                  - $ref: "#/components/schemas/IdentityVerification"
+        "400":
+          description: The provided ID is not valid
+        "404":
+          description: The provided ID does not correspond to a failed verification
+        "409":
+          description: The verification has already succeeded
+        "500":
+          description: An error occurred while retrying the verification
 
   /identity-verifications/{identity_verification_id}:
     get:
@@ -599,6 +854,14 @@ paths:
 
 components:
   examples:
+    identity_verification_creation_request_body_min:
+      value:
+        declared_data:
+          first_name: David
+          last_name: Vincent
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
+
     identity_verification_creation_request_body_max:
       value:
         user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
@@ -613,11 +876,14 @@ components:
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
 
-    identity_verification_creation_request_body_min:
+    identity_verification_retry_request_body_min:
+      value: {}
+
+    identity_verification_retry_request_body_max:
       value:
-        declared_data:
-          first_name: David
-          last_name: Vincent
+        phone_number:
+          country_code: "+1"
+          number: "2068133616"
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
 
@@ -655,7 +921,7 @@ components:
             href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
           applicant:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
-          active_link:
+          verification_url:
             href: "https://id.ubble.ai/4hryu5cei5/"
 
     applicant_creation_request_body:
@@ -817,6 +1083,18 @@ components:
         image_signed_url:
           $ref: "#/components/schemas/PreSignedUrl"
 
+    IdentityVerificationRetryRequest:
+      type: object
+      properties:
+        phone_number:
+          $ref: "#/components/schemas/PhoneNumber"
+        webhook_url:
+          type: string
+          format: uri
+        redirect_url:
+          type: string
+          format: uri
+
     ApplicantLink:
       type: object
       required: [applicant]
@@ -826,9 +1104,9 @@ components:
 
     ActiveLink:
       type: object
-      required: [active_link]
+      required: [verification_url]
       properties:
-        active_link:
+        verification_url:
           $ref: "#/components/schemas/HalLink"
 
     ApplicantRelation:
@@ -1032,7 +1310,6 @@ components:
       format: uri
       description: Pre-signed URL
       example: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
-
 
     DatedObject:
       type: object

@@ -664,14 +664,16 @@ paths:
                 required: true
                 content:
                   application/json:
-                    schema:
-                      type: object
-                      properties:
-                        message:
-                          type: string
-                          example: Some event happened
-                      required:
-                        - message
+                    example:
+                      {
+                          "specversion" : "2.0",
+                          "type" : "ai.ubble.identity-verification.capture_completion.v2",
+                          "subject" : "idv_5hxpdwegjcbujpth3wdo55d3vm",
+                          "id" : "evt_5hxpdwegjcbujpth3wdo55d3vm",
+                          "time" : "2023-03-22T17:31:00Z",
+                          "datacontenttype" : "application/json",
+                          "data" : "{\"id\": \"idv_5hxpdwegjcbujpth3wdo55d3vm\"}"
+                      }
               responses:
                 "200":
                   description: Your server returns this code if it accepts the callback
@@ -759,8 +761,8 @@ paths:
     post:
       tags:
         - identity verifications
-      summary: Creates a pre-signed URL of the identify verification report as a pdf file
-      description: Returns a pre-signed URL of the identify verification report as a pdf file
+      summary: Creates the pre-signed URL of the identity-verification pdf file
+      description: Creates the pre-signed URL of the identity-verification pdf file
       parameters:
         - name: identity_verification_id
           required: true
@@ -1198,6 +1200,13 @@ components:
       description: Applicant unique identifier.
       pattern: ^apl_\w+$
       example: apl_tkoi5db4hryu5cei5vwoabr7we
+      readOnly: true
+
+    OrganizationId:
+      type: string
+      description: Organization unique identifier.
+      pattern: ^org_\w+$
+      example: org_tkoi5db4hryu5cei5vwoabr7we
       readOnly: true
 
     IdentityVerificationId:

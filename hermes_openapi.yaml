@@ -317,12 +317,10 @@ info:
 
     When the status is retry_required, declined or refused you will also get additional information in the webhook body with the reason_codes. You will find below the exhaustive list of reason_codes. 
 
-    :::warning
+    !!! warning "warning"
+      Please note that we consider adding new reason codes as backward compatible. 
+      You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
 
-    Please note that we consider adding new reason codes as backward compatible. 
-    You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
-    
-    :::
 
 
     # Applicants

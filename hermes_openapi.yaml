@@ -573,7 +573,6 @@ info:
     |------------------------|--------|---------------------------------|
     | applicants             | apl    | apl_tkoi5db4hryu5cei5vwoabr7we  |
     | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
-    | organization           | org    | org_tkoi5db4hryu5cei5vwoabr7we  |
     | user-journey           | usj    | usj_tkoi5db4hryu5cei5vwoabr7we  |
 
     ## Content type
@@ -934,7 +933,6 @@ components:
         id: apl_tkoi5db4hryu5cei5vwoabr7we
         created_on: 2017-07-21T17:32:28Z
         modified_on: 2017-07-21T17:40:32Z
-        organization_id: org_tkoi5db4hryu5cei5vwoabr7we
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
         email: david.vincent@courriel.ml
         _links:
@@ -1118,17 +1116,13 @@ components:
             - $ref: "#/components/schemas/ApplicantId"
 
     Applicant:
-      required: [id, organization_id]
+      required: [id]
       allOf:
         - type: object
           properties:
             id:
               $ref: "#/components/schemas/ApplicantId"
         - $ref: "#/components/schemas/DatedObject"
-        - type: object
-          properties:
-            organization_id:
-              $ref: "#/components/schemas/OrganizationId"
         - $ref: "#/components/schemas/BaseApplicant"
         - $ref: "#/components/schemas/ApplicantsLinks"
 
@@ -1200,13 +1194,6 @@ components:
       maximum: 2999
 
     ApplicantId:
-      type: string
-      description: Applicant unique identifier.
-      pattern: ^apl_\w+$
-      example: apl_tkoi5db4hryu5cei5vwoabr7we
-      readOnly: true
-
-    OrganizationId:
       type: string
       description: Applicant unique identifier.
       pattern: ^apl_\w+$

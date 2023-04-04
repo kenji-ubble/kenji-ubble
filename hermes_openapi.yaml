@@ -143,7 +143,7 @@ info:
     `?id=123&event=capture_abortion&reason_codes=[1201]`
 
     This event can be: 
-    
+
     - `capture_completion`: the applicant has completed the capture. 
 
     In this case you will have to wait for the next event to make you decision. You can either ask applicants to perform additional checks, or make them wait until results are available. 
@@ -280,18 +280,53 @@ info:
     ## Lifecycle
 
     To make your decision you should mainly use events and status. This information is directly available in the webhook body.
-    
+
     ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/life%20cycle%20diagram.png)
 
     ## Events
+
     An event is a change in the verification lifecycle that triggers a notification.
 
-    # WIP
+    | Events             | Description                                                                |
+    |--------------------|----------------------------------------------------------------------------|
+    | creation           | You created an identity verification                                       |
+    | start              | The applicant has been redirected to the web application                   |
+    | capture_completion | The applicant completed the capture                                        |
+    | checks_completion  | We completed the checks                                                    |
+    | expiration         | The link expired without applicant being redirected to the web application |
+    | capture_refused    | The applicant explicitly refused to perform the verification               |
+    | capture_abortion   | The applicant terminated the capture without completing it                 |
+    | checks_failure     | We tried to complete the checks without success                            |
+    | retry_requested    | You requested a retry for this identity verification                       |
+
+    ## Status
+
+    The status is defined by the position of the verification in the lifecycle and indicates the decision to make. 
+
+    | Status              | Description                                                                                                                                                                     |
+    |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | pending             | The identity verification is available,  you should redirect the applicant to the web application using the link.                                                               |
+    | capture_in_progress | The applicant is performing the capture,  you should wait for status change.                                                                                                    |
+    | checks_in_progress  | We are performing the checks,  you should wait for status change.                                                                                                               |
+    | approved            | All checks are valid,  you should accept to the applicant request.                                                                                                              |
+    | declined            | An irregularity has been detected when performing checks, You should refuse the applicant request.  You can allow applicant to try again later by creating a new verification.  |
+    | retry_required      | We could not perform all the checks, you should request a retry for this identity verification.                                                                                 |
+    | refused             | The applicant refused to perform the verification,  you should propose an alternative.                                                                                          |
+
+    ## Reason codes
+
+    When the status is retry_required, declined or refused you will also get additional information in the webhook body with the reason_codes. You will find below the exhaustive list of reason_codes. 
+
+    :::warning
+    Please note that we consider adding new reason codes as backward compatible. 
+    You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
+    :::
+
 
     # Applicants
 
     # Webhooks
-    
+
     # API standards
 
     ## Required tag
@@ -452,7 +487,7 @@ paths:
         - name: identity_verification_id
           required: true
           in: path
-          description: is of identity verification to return
+          description: id of the identity verification
           schema:
             $ref: "#/components/schemas/IdentityVerificationId"
       responses:
@@ -465,6 +500,36 @@ paths:
                   $ref: "#/components/examples/identity_verification_response_body"
               schema:
                 $ref: "#/components/schemas/IdentityVerification"
+
+  /identity-verifications/{identity_verification_id}/pdf-url:
+    post:
+      tags:
+        - identity verifications
+      summary: Creates a pre-signed URL of the identify verification report as a pdf file
+      description: Returns a pre-signed URL of the identify verification report as a pdf file
+      parameters:
+        - name: identity_verification_id
+          required: true
+          in: path
+          description: id of the identity verification
+          schema:
+            $ref: "#/components/schemas/IdentityVerificationId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: ["presigned_url"]
+                properties:
+                  presigned_url:
+                    $ref: "#/components/schemas/PreSignedUrl"
+
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
 
   /applicants:
     post:
@@ -711,13 +776,9 @@ components:
           maxLength: 255
           readOnly: true
         front_image_signed_url:
-          type: string
-          format: uri
-          readOnly: true
+          $ref: "#/components/schemas/PreSignedUrl"
         back_image_signed_url:
-          type: string
-          format: uri
-          readOnly: true
+          $ref: "#/components/schemas/PreSignedUrl"
 
     Identity:
       type: object
@@ -754,9 +815,7 @@ components:
       readOnly: true
       properties:
         image_signed_url:
-          type: string
-          format: uri
-          readOnly: true
+          $ref: "#/components/schemas/PreSignedUrl"
 
     ApplicantLink:
       type: object
@@ -967,6 +1026,13 @@ components:
         href:
           type: string
           format: uri
+
+    PreSignedUrl:
+      type: string
+      format: uri
+      description: Pre-signed URL
+      example: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+
 
     DatedObject:
       type: object

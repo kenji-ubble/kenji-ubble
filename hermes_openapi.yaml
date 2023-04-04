@@ -558,7 +558,7 @@ info:
 
     ## Required tag
     ### required
-    Attributes tagged as `required` are **MUST** be present in requests and reponses.
+    Attributes tagged as `required` **MUST** be present in requests and reponses.
 
     ### null values
     Attributes not marked as `required` can be null. In that case the attribute is not sent in the response.
@@ -577,8 +577,6 @@ info:
 
     ## Content type
     The API accepts and returns `application/json` type.
-
-    ## Status codes
 
     ## Error handling
     Errors 4xx and 5xx are formatted as follows:
@@ -604,13 +602,13 @@ info:
 
     | name         | format                                                                                                                                              | example                                                                     |
     |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-    | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s) |  {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> } |
+    | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s)  |  {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> } |
     | date-time    | - Apply ISO8601<br /> - always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
 
   version: 2.0.0
 
 servers:
-  - url: https://api.ubble.ai/v2/
+  - url: https://api.staging.env.ubble.ai/v2/
 
 tags:
   - name: identity verifications
@@ -786,6 +784,11 @@ paths:
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_response_body"
+          links:
+            RetrieveApplicantById:
+              operationId: retrieve_applicant_by_id
+              parameters:
+                applicant_id: '$response.body#/id'
         "400":
           description: Bad request
           content:

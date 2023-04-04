@@ -666,14 +666,16 @@ paths:
                   application/json:
                     example:
                       {
-                          "specversion" : "2.0",
-                          "type" : "ai.ubble.identity-verification.capture_completion.v2",
-                          "subject" : "idv_5hxpdwegjcbujpth3wdo55d3vm",
-                          "id" : "evt_5hxpdwegjcbujpth3wdo55d3vm",
-                          "time" : "2023-03-22T17:31:00Z",
-                          "datacontenttype" : "application/json",
-                          "data" : "{\"id\": \"idv_5hxpdwegjcbujpth3wdo55d3vm\"}"
+                        "specversion": "2.0",
+                        "type": "ai.ubble.identity-verification.capture_completion.v2",
+                        "subject": "idv_5hxpdwegjcbujpth3wdo55d3vm",
+                        "id": "evt_5hxpdwegjcbujpth3wdo55d3vm",
+                        "time": "2023-03-22T17:31:00Z",
+                        "datacontenttype": "application/json",
+                        "data": '{"applicant_id":"apl_5hxpdwegjcbujpth3wdo55d3vm","user_journey_id":"usj_5hxpdwegjcbujpth3wdo55d3vm","identity_verification_id":"idv_5hxpdwegjcbujpth3wdo55d3vm","status":"declined","reason_codes":[1001,2001]}',
                       }
+                    schema:
+                      $ref: "#/components/schemas/WipEvent"
               responses:
                 "200":
                   description: Your server returns this code if it accepts the callback
@@ -757,36 +759,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/IdentityVerification"
 
-  /identity-verifications/{identity_verification_id}/pdf-url:
-    post:
-      tags:
-        - identity verifications
-      summary: Creates the pre-signed URL of the identity-verification pdf file
-      description: Creates the pre-signed URL of the identity-verification pdf file
-      parameters:
-        - name: identity_verification_id
-          required: true
-          in: path
-          description: id of the identity verification
-          schema:
-            $ref: "#/components/schemas/IdentityVerificationId"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                required: ["presigned_url"]
-                properties:
-                  presigned_url:
-                    $ref: "#/components/schemas/PreSignedUrl"
-
-        "404":
-          description: Not Found
-        "500":
-          description: Internal Server Error
-
   /applicants:
     post:
       tags:
@@ -843,6 +815,41 @@ paths:
       responses:
         "200":
           description: applicant retrieved succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Applicant"
+              examples:
+                Always replies:
+                  $ref: "#/components/examples/applicant_response_body"
+        "404":
+          description: "[WIP] Applicant not found"
+
+    patch:
+      tags:
+        - applicants
+      summary: WIP Update an Applicant
+      description: WIP Update an Applicant
+      operationId: update_applicant_by_id
+      parameters:
+        - name: applicant_id
+          required: true
+          in: path
+          description: id of Applicant to return
+          schema:
+            $ref: "#/components/schemas/ApplicantId"
+      requestBody:
+        description: Create an Applicant
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Applicant"
+            examples:
+              All possible data:
+                $ref: "#/components/examples/applicant_creation_request_body"
+      responses:
+        "200":
+          description: applicant updated succesfully
           content:
             application/json:
               schema:
@@ -912,6 +919,8 @@ components:
             front_image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
         face:
           image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+        pdf:
+          signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
         phone_number:
           country_code: "+1"
           number: "2068133616"
@@ -994,6 +1003,8 @@ components:
             $ref: "#/components/schemas/Document"
         face:
           $ref: "#/components/schemas/Face"
+        pdf:
+          $ref: "#/components/schemas/Pdf"
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
         webhook_url:
@@ -1083,6 +1094,14 @@ components:
         image_signed_url:
           $ref: "#/components/schemas/PreSignedUrl"
 
+    Pdf:
+      type: object
+      required: [signed_url]
+      readOnly: true
+      properties:
+        signed_url:
+          $ref: "#/components/schemas/PreSignedUrl"
+
     IdentityVerificationRetryRequest:
       type: object
       properties:
@@ -1094,6 +1113,40 @@ components:
         redirect_url:
           type: string
           format: uri
+
+    WipEvent:
+      type: object
+      required: [specversion, type, subject, id, time, datacontenttype, data]
+      properties:
+        specversion:
+          type: string
+          description: The version of the CloudEvents specification.
+          example: "2.0"
+        type:
+          type: string
+          description: The type of the CloudEvent.
+          example: "ai.ubble.identity-verification.capture_completion.v2"
+        subject:
+          type: string
+          description: The identifier of the subject of the event.
+          example: "idv_5hxpdwegjcbujpth3wdo55d3vm"
+        id:
+          type: string
+          description: The identifier of the event.
+          example: "evt_5hxpdwegjcbujpth3wdo55d3vm"
+        time:
+          type: string
+          format: date-time
+          description: The time when the event occurred.
+          example: "2023-03-22T17:31:00Z"
+        datacontenttype:
+          type: string
+          description: The content type of the data attribute.
+          example: "application/json"
+        data:
+          type: string
+          description: The event payload.
+          example: '{"applicant_id":"apl_5hxpdwegjcbujpth3wdo55d3vm","user_journey_id":"usj_5hxpdwegjcbujpth3wdo55d3vm","identity_verification_id":"idv_5hxpdwegjcbujpth3wdo55d3vm","status":"declined","reason_codes":[1001,2001]}'
 
     ApplicantLink:
       type: object

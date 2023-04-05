@@ -602,8 +602,9 @@ info:
 
     | name         | format                                                                                                                                              | example                                                                     |
     |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-    | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s)  |  {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> } |
-    | date-time    | - Apply ISO8601<br /> - always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
+    | countries    | - apply ISO 3166-1 alpha-2                                                                                                                          | FR                                                                          |
+    | date-time    | - apply ISO8601<br /> - always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
+    | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s)  | {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> }  |
 
   version: 2.0.0
 
@@ -631,15 +632,16 @@ paths:
       description: Create an identity verification.
       operationId: create_identity_verification
       requestBody:
-        description: Create an identity verification
         required: true
         content:
           application/json:
             examples:
-              Only required data (creates a new applicant):
+              Only required data:
                 $ref: "#/components/examples/identity_verification_creation_request_body_min"
-              All possible data (uses an existing applicant):
+              All possible data:
                 $ref: "#/components/examples/identity_verification_creation_request_body_max"
+              Use an existing applicant:
+                $ref: "#/components/examples/identity_verification_creation_request_body_min_plus_apl"
             schema:
               $ref: "#/components/schemas/IdentityVerification"
       responses:
@@ -682,25 +684,18 @@ paths:
     post:
       tags:
         - identity verifications
-      summary: Retry an identity verification
+      summary: Retry an identity verification by ID
       description: |
-        This endpoint allows you to retry a identification verification with the `retry_required` status.
-
-        You will need to provide the ID of the failed verification in the URL.
-
-        The verification will be retried using the same parameters as the original attempt.
-        You can override:
-        - phone_number
-        - webhook_url
-        - redirect_url
+        This endpoint allows you to retry an identification verification with the `retry_required` status.
 
         If the verification status is not `retry_required`, this endpoint will return an error.
+
+        You will need to provide the ID of the failed verification in the URL.
 
         The on success, the enpoint returns a `200` and the IdentityVerification ressource containing the new `_links/verification_url`
 
       operationId: retry_identity_verification
       requestBody:
-        description: Retry an identity verification
         content:
           application/json:
             examples:
@@ -736,14 +731,14 @@ paths:
     get:
       tags:
         - identity verifications
-      summary: Retrieve an identity verification by id
-      description: Returns a single identity verification
+      summary: Retrieve an identity verification by ID
+      description: Retrieve an identity verification by ID
       operationId: retrieve_identity_verification_by_id
       parameters:
         - name: identity_verification_id
           required: true
           in: path
-          description: id of the identity verification
+          description: ID of the identity verification
           schema:
             $ref: "#/components/schemas/IdentityVerificationId"
       responses:
@@ -755,7 +750,48 @@ paths:
                 identity_verification_creation_response_body:
                   $ref: "#/components/examples/identity_verification_response_body"
               schema:
-                $ref: "#/components/schemas/IdentityVerification"
+                required: [applicant_id, user_journey_id, phone_number]
+                allOf:
+                  - $ref: "#/components/schemas/IdentityVerification"
+
+  /identity-verifications/{identity_verification_id}/anonymize:
+    post:
+      tags:
+        - identity verifications
+      summary: Anonymize an identity verification by ID
+      description: Anonymize the personal data of an identity verification with the specified ID.
+      operationId: anonymizeVerification
+      parameters:
+        - name: identity_verification_id
+          in: path
+          description: ID of the identity verification to anonymize
+          required: true
+          schema:
+            type: integer
+      responses:
+        '202':
+          description: Identity verification anonymization requested
+          content:
+            application/json:
+              example:
+                id: idv_tkoi5db4hryu5cei5vwoabr7we
+                _links:
+                  self:
+                    href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
+              schema:
+                type: object
+                required: [id, _links]
+                properties:
+                  id:
+                    $ref: "#/components/schemas/IdentityVerificationId"
+                  _links:
+                    $ref: "#/components/schemas/SelfLink"
+        '404':
+          description: Identity verification not found
+        '400':
+          description: Bad request. The identity verification cannot be anonymized.
+        '500':
+          description: Internal server error
 
   /applicants:
     post:
@@ -765,7 +801,6 @@ paths:
       description: Create an Applicant
       operationId: create_applicant
       requestBody:
-        description: Create an Applicant
         content:
           application/json:
             schema:
@@ -788,7 +823,7 @@ paths:
             RetrieveApplicantById:
               operationId: retrieve_applicant_by_id
               parameters:
-                applicant_id: '$response.body#/id'
+                applicant_id: "$response.body#/id"
         "400":
           description: Bad request
           content:
@@ -805,14 +840,14 @@ paths:
     get:
       tags:
         - applicants
-      summary: Retrieve an Applicant by id
-      description: Retrieve an Applicant by id
+      summary: Retrieve an Applicant by ID
+      description: Retrieve an Applicant by ID
       operationId: retrieve_applicant_by_id
       parameters:
         - name: applicant_id
           required: true
           in: path
-          description: id of Applicant to return
+          description: ID of Applicant to return
           schema:
             $ref: "#/components/schemas/ApplicantId"
       responses:
@@ -831,18 +866,17 @@ paths:
     patch:
       tags:
         - applicants
-      summary: WIP Update an Applicant
-      description: WIP Update an Applicant
+      summary: Update an Applicant by ID
+      description: Update an Applicant by ID
       operationId: update_applicant_by_id
       parameters:
         - name: applicant_id
           required: true
           in: path
-          description: id of Applicant to return
+          description: ID of Applicant to return
           schema:
             $ref: "#/components/schemas/ApplicantId"
       requestBody:
-        description: Create an Applicant
         content:
           application/json:
             schema:
@@ -860,13 +894,26 @@ paths:
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_response_body"
-        "404":
-          description: "[WIP] Applicant not found"
+        '404':
+          description: Applicant not found
+        '400':
+          description: Bad request. One or more input parameters are invalid
+        '500':
+          description: Internal server error
 
 components:
   examples:
     identity_verification_creation_request_body_min:
       value:
+        declared_data:
+          first_name: David
+          last_name: Vincent
+        webhook_url: https://my.api/events/
+        redirect_url: https://myweb.site?query-param=hello
+
+    identity_verification_creation_request_body_min_plus_apl:
+      value:
+        applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
           first_name: David
           last_name: Vincent
@@ -908,7 +955,7 @@ components:
         status: declined
         reason_codes: [1003, 2001]
         verified_identity:
-          first_name: David
+          first_names: David
           last_name: Vincent
           birth_date: 1934-10-02
         declared_data:
@@ -917,7 +964,7 @@ components:
           birth_date: 1934-10-02
         documents:
           - document_type: ID
-            first_name: David
+            first_names: David
             last_name: Vincent
             front_image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
         face:
@@ -986,7 +1033,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/ApplicantId"
         status:
-          $ref: "#/components/schemas/VerificationStatues"
+          $ref: "#/components/schemas/VerificationStatuses"
         reason_codes:
           type: array
           readOnly: true
@@ -1042,28 +1089,79 @@ components:
 
     Document:
       type: object
-      required: [document_type, first_name, last_name, front_image_signed_url]
+      required: [document_type, first_names, last_name, front_image_signed_url]
       readOnly: true
       properties:
-        document_type:
-          $ref: "#/components/schemas/DocumentTypes"
-        first_name:
+        birth_date:
+          type: string
+          format: date
+        birth_place:
           type: string
           maxLength: 255
-          readOnly: true
+        car_driving_license_expiry_date:
+          type: string
+          format: date
+        document_number:
+          type: string
+          maxLength: 255
+        document_type:
+          $ref: "#/components/schemas/DocumentTypes"
+        document_type_detailed:
+          type: string
+          maxLength: 255
+        expiry_date:
+          type: string
+          format: date
+        first_names:
+          type: string
+          maxLength: 255
         last_name:
           type: string
           maxLength: 255
-          readOnly: true
+        married_name:
+          type: string
+          maxLength: 255
+        gender:
+          $ref: "#/components/schemas/Gender"
+        issue_date:
+          type: string
+          format: date
+        issue_place:
+          type: string
+          maxLength: 255
+        issuing_state_code:
+          $ref: "#/components/schemas/CountryCode"
+        mrz:
+          type: string
+          pattern: ^([A-Z0-9<]{2}[A-Z0-9<]{1,38}[\n\r])+([A-Z0-9<]{2}[A-Z0-9<]{1,44}[\n\r])?([A-Z0-9<]{2}[A-Z0-9<]{1,44}[\n\r])?$
+        nationality:
+          $ref: "#/components/schemas/CountryCode"
+        obtaining_date:
+          type: string
+          format: date
+        personal_number:
+          type: string
+          maxLength: 255
+        remarks:
+          type: string
+          maxLength: 255
+        residence_address:
+          $ref: "#/components/schemas/Address"
+        tax_identification_number:
+          type: string
+          maxLength: 255
         front_image_signed_url:
           $ref: "#/components/schemas/PreSignedUrl"
         back_image_signed_url:
           $ref: "#/components/schemas/PreSignedUrl"
+        front_video_signed_url:
+          $ref: "#/components/schemas/PreSignedUrl"
+        back_video_signed_url:
+          $ref: "#/components/schemas/PreSignedUrl"
 
     Identity:
       type: object
-      required:
-        [first_names, last_name, birth_date, birth_place, nationality, gender]
+      required: [first_names, last_name, birth_date, birth_place, nationality]
       readOnly: true
       properties:
         first_names:
@@ -1107,6 +1205,7 @@ components:
 
     IdentityVerificationRetryRequest:
       type: object
+      required: [webhook_url, redirect_url]
       properties:
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
@@ -1194,6 +1293,8 @@ components:
           type: string
           format: email
           example: david.vincent@courriel.ml
+        verified_identity:
+          $ref: "#/components/schemas/Identity"
 
     ApplicantsLinks:
       type: object
@@ -1221,27 +1322,30 @@ components:
         - passport
         - residence permit
 
-    VerificationStatues:
+    VerificationStatuses:
       type: string
       description: Status of the identity verification.
       readOnly: true
       enum:
         - pending
-        - in_progress
+        - capture_in_progress
+        - checks_in_progress
         - approved
         - declined
         - new_capture_required
+        - refused
 
     AttemptStates:
       type: string
       description: States of an attempt.
       enum:
-        - pending
+        - pending_redirection
         - capture_in_progress
         - checks_in_progress
         - completed
         - expired
         - capture_aborted
+        - capture_refused
         - checks_aborted
 
     ReasonCode:
@@ -1310,6 +1414,7 @@ components:
     CountryCode:
       type: string
       format: ISO 3166-1 alpha-2
+      pattern: ^[A-Za-z]{2}$
       example: US
 
     Gender:

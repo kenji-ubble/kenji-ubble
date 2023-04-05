@@ -861,7 +861,7 @@ paths:
                 Always replies:
                   $ref: "#/components/examples/applicant_response_body"
         "404":
-          description: "[WIP] Applicant not found"
+          description: "Applicant not found"
 
     patch:
       tags:

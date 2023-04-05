@@ -612,10 +612,10 @@ info:
     ## Configuration
     You need to define the webhook you want to be notified on when creating an identity verification. You will be notified of each event on identity verifications. For more details see the event section. 
 
-    To help you integrate your webhook you can trigger it with the standard answers, see [notify endpoint](#tag/identity-verifications/operation/create_identity_verification).
+    To help you integrate your webhook you can trigger it with the standard answers, see [notify endpoint](#tag/identity-verifications/operation/notify_identity_verification_by_id).
 
     ## Retry
-    We expect that you return us a 200 or 201 status code within 10 seconds before we retry, up to 2 retries will be performed. If needed, webhook notifications can be resend manually using the [notify endpoint](#tag/identity-verifications/operation/create_identity_verification).
+    We expect that you return us a 200 or 201 status code within 10 seconds before we retry, up to 2 retries will be performed. If needed, webhook notifications can be resend manually using the [notify endpoint](#tag/identity-verifications/operation/notify_identity_verification_by_id).
 
     ## Body 
     The webhook body contains the following information: 
@@ -860,7 +860,7 @@ paths:
         - identity verifications
       summary: Anonymize an identity verification by ID
       description: Anonymize the personal data of an identity verification with the specified ID.
-      operationId: anonymizeVerification
+      operationId: anonymize_identity_verification_by_id
       parameters:
         - name: identity_verification_id
           in: path
@@ -892,6 +892,35 @@ paths:
           description: Bad request. The identity verification cannot be anonymized.
         "500":
           description: Internal server error
+
+  /identity-verifications/{identity_verification_id}/notify:
+    post:
+      tags:
+        - identity verifications
+      summary: Request webhook notification on identity verification ID
+      operationId: notify_identity_verification_by_id
+      description: |
+        - It can be used for identity verification regardless of their statuses.
+        - It initiates a webhook call containing the latest event associated with the identity verification.
+      parameters:
+        - name: identity_verification_id
+          in: path
+          description: ID of the identity verification to notify
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhook_url:
+                  type: string
+                  format: uri
+      responses:
+        "204":
+          description: Notification succesfully requested
 
   /applicants:
     post:

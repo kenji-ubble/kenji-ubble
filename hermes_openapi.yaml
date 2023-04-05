@@ -623,6 +623,12 @@ tags:
       description: Find out more
       url: https://ubble.ai
 
+x-tagGroups:
+  - name: Endpoints documentation
+    tags:
+      - identity verifications
+      - applicants
+
 paths:
   /identity-verifications:
     post:

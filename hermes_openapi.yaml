@@ -542,17 +542,109 @@ info:
       </div>
     </div>
 
-    ## WIP - Detailed results
+    ## Detailed results
+
+    ### Retrieve an identification
+
+    If you need, you can get the full results by using the retrieve an identity verification endpoint. It will mainly include the following information:
+
+    | Attribute    | Description                                                                                                    |
+    |--------------|----------------------------------------------------------------------------------------------------------------|
+    | status       | Indicates the position in the lifecycle as well as the action to be taken                                      |
+    | reason_codes | Indicates the cause when the status is refused, declined or retry_required                                     |
+    | identity     | Includes all information about the identity of the applicant                                                   |
+    | document     | Includes all information that has been extracted from the document, as well as the best images of the document |
+    | face         | Includes the best image of the face                                                                            |
+    | pdf          | Includes all information in a pdf format                                                                       |
+
+    Please note that the information we extract from the document can be configured with your solution engineer.
+
+    ### API response signing
+    If enabled in your configuration (Contact your account manager in order to activate the response signature), Ubble API responses will be signed. This signature can be used to verify that the api response has not been altered and has been issued by Ubble and not by anyone else. To also verify that assets data (images) has not been altered and comes from Ubble, the assets hash has been added to the response body, and after verification of the signature, the images can be hashed and compared to the hashes in the verified response. Ubble uses an asymetric key signing algorithm of type ECDSA with a sha2-512 hashing algorithm. Assets are hashed using the sha2-256 hashing algorithm.
+
+    #### Signing key policy
+    A signing key will be created for each configuration and for each environment (Live and Test). The public key (used for signature verification) associated with the private key that is managed by ubble can be downloaded from the client dashboard. The private key has a validity of 1 year and will be automatically renewed. Upon renewal the public key will also change and has to be re-downloaded from the dashboard. You can detect a key rotation by looking at the signature version in the api response, to verify that response you will need to use the public key with the same version. All versions of the public key can be downloaded from the dashboard so you don't have to worry about losing older versions.
+
+    #### Verifying Response signature
+
+    The `Ubble-Signature` header contains the timestamp of the request (`1635236316.377888`), the signing key identifier and version (`3456-live-v1`) as well as the signature itself (`5257a869a7ecebeda35affa62cdcb3fa51cad7e77a0e56ff546d0ae8e108d8bd`).
+
+    format:
+    ```
+      <timestamp>:<configuration id>-<test or live identification>-<key version>:<signature>
+    ```
+
+    example:
+    ```
+      1635236316.377888:3456-live-v1:5257a869a7ecebeda35affa62cdcb3fa51cad7e77a0e56ff546d0ae8e108d8bd
+    ```
+
+    The signature can be verified on your side by verifying the signature against the received body using the `public key` corresponding to the signature key. You will need the Public key corresponding to the signature version, that you can find on your dashboard configuration page. There is one for test identifications and one for live identifications.
+
+    See the example in python if you need help.
+
+    #### Verifying Assets
+    To verify that the assets that correspond to the received response are correct, the received images have to be hashed using a specific algorithm, this hash must be the same as the hash that was sent with the signed response.
+
+    Be aware that all two verification stages must be valid (api response signature and assets hash) for the data to be valid.
 
     ## Data management
+    You can define with your solution engineer the data storage time, in accordance with your purpose for using the data. At the end of this time, the identity verifications are anonymized, what means that all fields consider as personal or sensitive data are deleted.
+
+    If needed, you can also request the anonymization of an identity verification through the dedicated endpoint. 
 
     # Applicants
 
     ## Creation
+    When you create an identity verification, an applicant is automatically created and the call returns an `applicant_id`. 
+
+    You can also directly create an applicant using the dedicated endpoint. In this case you will be able to define the `external_applicant_id`, that should correspond to unique identifier of the applicant in your database, as well as the `mail` of the applicant. 
+
+    If the applicant is already created, you can also patch this information using the dedicated endpoint. 
+
     ## Applicant file 
-    ## Data comparison
+    You can request several verifications for the same applicant. You only need to indicate the concerned `applicant_id` when creating the verification. 
+
+    If and only if an identity verification is `approved`, the verified identity is added to the applicant file and you can find this information using the retrieve an applicant endpoint. 
 
     # Webhooks
+
+    ## Configuration
+    You need to define the webhook you want to be notified on when creating an identity verification. You will be notified of each event on identity verifications. For more details see the event section. 
+
+    To help you integrate your webhook you can trigger it with the standard answers, see [notify endpoint](#tag/identity-verifications/operation/create_identity_verification).
+
+    ## Retry
+    We expect that you return us a 200 or 201 status code within 10 seconds before we retry, up to 2 retries will be performed. If needed, webhook notifications can be resend manually using the [notify endpoint](#tag/identity-verifications/operation/create_identity_verification).
+
+    ## Body 
+    The webhook body contains the following information: 
+
+    | Attribute                | Description                                   |
+    |--------------------------|-----------------------------------------------|
+    | applicant_id             | id of the applicant, useful to recognize them |
+    | user_journey_id          | id of the user journey                        |
+    | identity_verification_id | id of the identity verification               |
+    | status                   | status of the identity verification           |
+    | reason_codes             | list of reason codes                          |
+
+    ## Signature
+    For security reason all our webhook calls are signed.
+
+    `Ubble-Signature` header contains the timestamp of the signature plus the signature itself. This allow you to ensure the content of the webhook was not modified.
+
+    The timestamp is prefixed by `ts=`, and the signature is prefixed by `v1=`. Example: `ts=1492774577,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd`
+
+    To compare the signature, you will need the `webhook secret`, that you can find on your dashboard configuration page. There is one for secret for test identifications and one for live identifications.
+
+    See the example in python if you need help.
+
+    ## Security
+    ### Webhook ip whitelisting
+    For security purposes, if you need to whitelist our incoming api calls, see our [public ip](https://docs.outscale.com/en/userguide/OUTSCALE-Public-IPs.html).
+
+    ### Webhooks Authentication
+    You can also choose to authentify our webhook calls against OAuth2. Please contact your solution engineer in order set up the authentication. You will need to provide an URL Token, a `CLIENT_ID`, a `CLIENT_SECRET` and optionnally a refresh token URL.
 
     # API standards
 
@@ -684,7 +776,9 @@ paths:
                       $ref: "#/components/schemas/WipEvent"
               responses:
                 "200":
-                  description: Your server returns this code if it accepts the callback
+                  description: Your server returns this code if it accepts the callback.
+                "201":
+                  description: Your server returns this code if it accepts the callback.
 
   /identity-verifications/{identity_verification_id}/retry:
     post:
@@ -775,7 +869,7 @@ paths:
           schema:
             type: integer
       responses:
-        '202':
+        "202":
           description: Identity verification anonymization requested
           content:
             application/json:
@@ -792,11 +886,11 @@ paths:
                     $ref: "#/components/schemas/IdentityVerificationId"
                   _links:
                     $ref: "#/components/schemas/SelfLink"
-        '404':
+        "404":
           description: Identity verification not found
-        '400':
+        "400":
           description: Bad request. The identity verification cannot be anonymized.
-        '500':
+        "500":
           description: Internal server error
 
   /applicants:
@@ -900,11 +994,11 @@ paths:
               examples:
                 Always replies:
                   $ref: "#/components/examples/applicant_response_body"
-        '404':
+        "404":
           description: Applicant not found
-        '400':
+        "400":
           description: Bad request. One or more input parameters are invalid
-        '500':
+        "500":
           description: Internal server error
 
 components:

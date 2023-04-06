@@ -317,8 +317,13 @@ info:
 
     When the status is retry_required, declined or refused you will also get additional information in the webhook body with the reason_codes. You will find below the exhaustive list of reason_codes. 
 
-    > **warning:** Please note that we consider adding new reason codes as backward compatible. 
-    > You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.
+    <div style="border: 1px solid #ccc; padding: 0px 0px 14px 14px ; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
+      <div style="margin-right: 20px; margin-top: 14px; font-size: 24px; color: #f8c92e; vertical-align: center;">⚠️</div>
+      <div style="display: table-cell; vertical-align: center;">
+        <p>Please note that we consider adding new reason codes as backward compatible.</p>
+        <p>You should then build you business rules on status and use reason codes as additional information, rather than use reason codes as required information.</p>
+      </div>
+    </div>
 
     <style type="text/css">
     .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
@@ -327,14 +332,14 @@ info:
     .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
       font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
     .tg .tg-dvid{background-color:#efefef;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-    .tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-    .tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+    .tg .tg-fymr{background-color:#f0f0f0;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+    .tg .tg-y698{background-color:#c4c4c4;border-color:inherit;text-align:left;vertical-align:top}
     .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
     </style>
     <table class="tg">
     <thead>
       <tr>
-        <th class="tg-fymr">OR string<br></th>
+        <th class="tg-fymr">String<br></th>
         <th class="tg-fymr">Description<br></th>
       </tr>
     </thead>
@@ -350,7 +355,7 @@ info:
         <td class="tg-y698" colspan="2"><span style="font-weight:bold">Status</span>: <code>retry_required</code></td>
       </tr>
       <tr>
-        <td class="tg-y698" colspan="2"><span style="font-weight:bold">applicant readiness issue</span></td>
+        <td class="tg-fymr" colspan="2"><span style="font-weight:bold">Applicant readiness issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">applicant_not_redirected</td>
@@ -377,7 +382,7 @@ info:
         <td class="tg-0pky">applicant left the process during the capture phase</td>
       </tr>
       <tr>
-        <td class="tg-y698" colspan="2">   </td>
+        <td class="tg-fymr" colspan="2"><span style="font-weight:bold">Technical issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">technical_connexion_insufficient</td>
@@ -392,7 +397,7 @@ info:
         <td class="tg-0pky">applicant’s device did not have any camera</td>
       </tr>
       <tr>
-        <td class="tg-dvid" colspan="2">Manipulation issue</td>
+        <td class="tg-fymr" colspan="2"><span style="font-weight:bold">Manipulation issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">manipulation_document_blurry</td>
@@ -443,7 +448,7 @@ info:
         <td class="tg-0pky">applicant performed their id verification under poor lighting conditions</td>
       </tr>
       <tr>
-        <td class="tg-y698" colspan="2">   </td>
+        <td class="tg-fymr" colspan="2"><span style="font-weight:bold">Internal error</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">internal_error</td>
@@ -535,9 +540,9 @@ info:
 
     We strongly advice you to use the reason_codes to guide the applicant toward success. For example, if the reason codes indicate that the connection of the applicant is not sufficient, you should give this information to the applicant. 
 
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
-      <div style="margin-right: 10px; font-size: 24px; color: #f8c92e;">⚠️</div>
-      <div style="display: table-cell; vertical-align: top;">
+    <div style="border: 1px solid #ccc; padding: 0px 0px 14px 14px ; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
+      <div style="margin-right: 20px; margin-top: 14px; font-size: 24px; color: #f8c92e; vertical-align: center;">⚠️</div>
+      <div style="display: table-cell; vertical-align: center;">
         <p>Please note that you cannot request a retry if the status is declined. If you still want to onboard the concerned applicant, you should request a new verification and indicate the applicant_id. For more details see the applicant section.</p>
       </div>
     </div>

@@ -260,8 +260,8 @@ info:
       {"code": 1310, "reason": "manipulation_face_blurry"},
       {"code: 2102, "reason": "document_not_accepted"},
     ]
-    You will find below the exhaustive list of these codes. 
     ```
+    You will find below the exhaustive list of these codes. 
 
     <div style="padding: 0px 0px 14px 14px ; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
       <div style="margin-right: 20px; margin-top: 14px; font-size: 24px; color: #f8c92e; vertical-align: center;">⚠️</div>

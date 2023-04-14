@@ -711,15 +711,9 @@ servers:
 
 tags:
   - name: identity verifications
-    description: An identity verification service.
-    externalDocs:
-      description: Find out more
-      url: https://ubble.ai
+    description: Identity verification endpoints documentation.
   - name: applicants
-    description: Applicant management
-    externalDocs:
-      description: Find out more
-      url: https://ubble.ai
+    description: Applicant management endpoints documentation.
 
 x-tagGroups:
   - name: Endpoints documentation

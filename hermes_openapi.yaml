@@ -265,17 +265,27 @@ info:
     </div>
 
     <style type="text/css">
-    .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+    .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0}
     .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
       font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
     .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
       font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
     .tg .tg-dvid{background-color:#efefef;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-    .tg .tg-fymr{background-color:#f0f0f0;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+    .tg .tg-fymr{background-color:#f0f0f0;border-color:inherit;font-weight:bold;text-align:left;vertical-align:top;}
     .tg .tg-y698{background-color:#c4c4c4;border-color:inherit;text-align:left;vertical-align:top}
     .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+    .one {width: 5%}
+    .two {width: 40%}
+    .three {width: 0%}
     </style>
+
+    ### Status: `refused`
     <table class="tg">
+    <colgroup>
+      <col class="one" />
+      <col class="two" />
+      <col class="three" />
+    </colgroup>
     <thead>
       <tr>
         <th class="tg-fymr"><nobr><code>code</code></nobr></th>
@@ -285,129 +295,149 @@ info:
     </thead>
     <tbody>
       <tr>
-        <td class="tg-y698" colspan="3"><span style="font-weight:bold">Status</span>: <code>refused</code></td>
-      </tr>
-      <tr>
         <td class="tg-0pky">1001</td>
         <td class="tg-0pky">applicant_refusal</td>
-        <td class="tg-0pky">applicant explicitly refused to do the verification process</td>
+        <td class="tg-0pky">applicant explicitly refused to do the verification process by clicking on the dedicated button</td>
       </tr>
+    </tbody>
+    </table>
+
+    ### Status: `retry_required`
+    <table class="tg">
+    <colgroup>
+      <col class="one" />
+      <col class="two" />
+      <col class="three" />
+    </colgroup>
+    <thead>
       <tr>
-        <td class="tg-y698" colspan="3"><span style="font-weight:bold">Status</span>: <code>retry_required</code></td>
+        <th class="tg-fymr"><nobr><code>code</code></nobr></th>
+        <th class="tg-fymr"><code>reason</code></th>
+        <th class="tg-fymr">Description</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
-        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Applicant readiness issue</span></td>
+        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Applicant engagement issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">1101</td>
-        <td class="tg-0pky">applicant_not_redirected</td>
-        <td class="tg-0pky">applicant never started the attempt</td>
+        <td class="tg-0pky">applicant_never_started</td>
+        <td class="tg-0pky">applicant was probably not redirected to the application and never started the flow</td>
       </tr>
       <tr>
         <td class="tg-0pky">1111</td>
         <td class="tg-0pky">applicant_not_ready</td>
-        <td class="tg-0pky">applicant wants to perform the identity verification later</td>
+        <td class="tg-0pky">applicant explicitly stated that he/she wanted to perform the identity verification later by clicking on the dedicated button</td>
       </tr>
       <tr>
         <td class="tg-0pky">1112</td>
         <td class="tg-0pky">applicant_no_document</td>
-        <td class="tg-0pky">applicant did not have their document with him</td>
+        <td class="tg-0pky">applicant explicitly stated that he/she did not have their document with him by clicking on the dedicated button</td>
       </tr>
       <tr>
         <td class="tg-0pky">1113</td>
-        <td class="tg-0pky">applicant_refused_camera_access</td>
-        <td class="tg-0pky">applicant did not give access to the camera</td>
+        <td class="tg-0pky">camera_access_refused</td>
+        <td class="tg-0pky">applicant did not give access to the camera despite the dedicated instructions</td>
       </tr>
       <tr>
         <td class="tg-0pky">1121</td>
-        <td class="tg-0pky">applicant_left_before_capture</td>
-        <td class="tg-0pky">applicant left the process before the capture phase</td>
+        <td class="tg-0pky">drop_before_capture</td>
+        <td class="tg-0pky">applicant left the process before the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
       </tr>
       <tr>
         <td class="tg-0pky">1131</td>
-        <td class="tg-0pky">applicant_left_during_capture</td>
-        <td class="tg-0pky">applicant left the process during the capture phase</td>
+        <td class="tg-0pky">drop_during_capture</td>
+        <td class="tg-0pky">applicant left the process during the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Technical issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">1201</td>
-        <td class="tg-0pky">technical_connexion_insufficient</td>
-        <td class="tg-0pky">applicant did not have a sufficient connexion</td>
+        <td class="tg-0pky">connexion_insufficient</td>
+        <td class="tg-0pky">applicant did not have a sufficient connexion to perform the capture</td>
       </tr>
       <tr>
         <td class="tg-0pky">1202</td>
-        <td class="tg-0pky">technical_browser_incompatible</td>
+        <td class="tg-0pky">browser_not_supported</td>
         <td class="tg-0pky">applicant’s browser was not suitable for video streaming</td>
       </tr>
       <tr>
         <td class="tg-0pky">1203</td>
-        <td class="tg-0pky">technical_camera_absent</td>
+        <td class="tg-0pky">camera_not_found</td>
         <td class="tg-0pky">applicant’s device did not have any camera</td>
       </tr>
       <tr>
-        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Manipulation issue</span></td>
+        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Document capture issue</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">1301</td>
-        <td class="tg-0pky">manipulation_document_blurry</td>
+        <td class="tg-0pky">document_video_blurry</td>
         <td class="tg-0pky">applicant’s document video is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
       </tr>
       <tr>
         <td class="tg-0pky">1302</td>
-        <td class="tg-0pky">manipulation_document_front_absent</td>
-        <td class="tg-0pky">applicant has not presented the front of the document</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">1303</td>
-        <td class="tg-0pky">manipulation_document_back_absent</td>
-        <td class="tg-0pky">applicant has not presented the back of the document</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">1304</td>
-        <td class="tg-0pky">manipulation_document_partially_hidden</td>
-        <td class="tg-0pky">applicant hides part of the document</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">1305</td>
-        <td class="tg-0pky">manipulation_document_no_movement</td>
-        <td class="tg-0pky">applicant did not present a dynamic view of the document</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">1306</td>
-        <td class="tg-0pky">manipulation_document_challenge_failed</td>
-        <td class="tg-0pky">applicant did not follow the instructions when submitting their document</td>
+        <td class="tg-0pky">document_video_lighting_issue</td>
+        <td class="tg-0pky">applicant performed the document capture under poor lighting conditions</td>
       </tr>
       <tr>
         <td class="tg-0pky">1310</td>
         <td class="tg-0pky">manipulation_face_blurry</td>
-        <td class="tg-0pky">applicant’s video of their face is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+        <td class="tg-0pky">applicant has not captured the front of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1311</td>
-        <td class="tg-0pky">manipulation_face_absent</td>
-        <td class="tg-0pky">applicant has not presented a face</td>
+        <td class="tg-0pky">document_back_not_captured</td>
+        <td class="tg-0pky">applicant has not captured the back of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1312</td>
-        <td class="tg-0pky">manipulation_face_partially_hidden</td>
-        <td class="tg-0pky">applicant did not show the full front view of their face</td>
+        <td class="tg-0pky">document_partially_hidden</td>
+        <td class="tg-0pky">applicant hides part of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1313</td>
-        <td class="tg-0pky">manipulation_face_no_movement</td>
-        <td class="tg-0pky">applicant did not move to prove the liveness</td>
+        <td class="tg-0pky">document_not_tilted</td>
+        <td class="tg-0pky">applicant did not present a dynamic view of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1314</td>
-        <td class="tg-0pky">manipulation_face_challenge_failed</td>
-        <td class="tg-0pky">applicant did not follow the instructions when submitting their face</td>
+        <td class="tg-0pky">document_instructions_not_followed</td>
+        <td class="tg-0pky">applicant did not follow the instructions when submitting their document</td>
       </tr>
       <tr>
-        <td class="tg-0pky">1320</td>
-        <td class="tg-0pky">manipulation_lighting_issue</td>
+        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Face capture issue</span></td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1401</td>
+        <td class="tg-0pky">face_video_blurry</td>
+        <td class="tg-0pky">applicant’s video of their face is too blurry <br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1402</td>
+        <td class="tg-0pky">face_video_lighting_issue</td>
         <td class="tg-0pky">applicant performed their id verification under poor lighting conditions</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1410</td>
+        <td class="tg-0pky">face_not_captured</td>
+        <td class="tg-0pky">applicant has not presented a face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1411</td>
+        <td class="tg-0pky">face_partially_hidden</td>
+        <td class="tg-0pky">applicant did not show the full front view of their face</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1412</td>
+        <td class="tg-0pky">face_not_turned</td>
+        <td class="tg-0pky">applicant did not move to prove the liveness</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">1413</td>
+        <td class="tg-0pky">face_instructions_not_followed</td>
+        <td class="tg-0pky">applicant did not follow the instructions when submitting their face</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Internal error</span></td>
@@ -415,11 +445,26 @@ info:
       <tr>
         <td class="tg-0pky">1901</td>
         <td class="tg-0pky">internal_error</td>
-        <td class="tg-0pky">Internal error</td>
+        <td class="tg-0pky">an internal error prevents us from completing the verification, we do our best to reduce the occurrence of this case</td>
       </tr>
+    </tbody>
+    </table>
+
+    ### Status: `declined`
+    <table class="tg">
+    <colgroup>
+      <col class="one" />
+      <col class="two" />
+      <col class="three" />
+    </colgroup>
+    <thead>
       <tr>
-        <td class="tg-y698" colspan="3"><span style="font-weight:bold">Status</span>: <code>declined</code></td>
+        <th class="tg-fymr"><nobr><code>code</code></nobr></th>
+        <th class="tg-fymr"><code>reason</code></th>
+        <th class="tg-fymr">Description</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="tg-dvid" colspan="3">Document issue</td>
       </tr>
@@ -453,50 +498,45 @@ info:
       </tr>
       <tr>
         <td class="tg-0pky">2301</td>
-        <td class="tg-0pky">fraud_document_counterfeit</td>
+        <td class="tg-0pky">document_counterfeit</td>
         <td class="tg-0pky">applicant has submitted a counterfeit or falsification</td>
       </tr>
       <tr>
         <td class="tg-0pky">2302</td>
-        <td class="tg-0pky">fraud_document_stolen</td>
+        <td class="tg-0pky">document_stolen</td>
         <td class="tg-0pky">applicant presented a document declared as stolen or lost</td>
       </tr>
       <tr>
         <td class="tg-0pky">2303</td>
-        <td class="tg-0pky">fraud_document_swap</td>
+        <td class="tg-0pky">document_swap</td>
         <td class="tg-0pky">applicant presented the front and back of two different documents</td>
       </tr>
       <tr>
         <td class="tg-0pky">2304</td>
-        <td class="tg-0pky">fraud_face_mismatch</td>
-        <td class="tg-0pky">applicant is not the rightful owner of the document</td>
+        <td class="tg-0pky">face_mismatch</td>
+        <td class="tg-0pky">applicant does not match the photograph of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">2305</td>
-        <td class="tg-0pky">fraud_face_not_live</td>
-        <td class="tg-0pky">applicant presented another person's face</td>
+        <td class="tg-0pky">face_not_live</td>
+        <td class="tg-0pky">applicant has presented someone else's face on a screen or on a physical medium</td>
       </tr>
       <tr>
         <td class="tg-0pky">2306</td>
-        <td class="tg-0pky">fraud_face_alteration</td>
+        <td class="tg-0pky">face_alteration</td>
         <td class="tg-0pky">applicant has altered his/her appearance</td>
       </tr>
       <tr>
         <td class="tg-0pky">2307</td>
-        <td class="tg-0pky">fraud_videos_alteration</td>
+        <td class="tg-0pky">videos_digital_alteration</td>
         <td class="tg-0pky">applicant has digitally altered the videos</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">2399</td>
-        <td class="tg-0pky">fraud_generic</td>
-        <td class="tg-0pky">Generic code when a fraud has been detected within a certified identity verification</td>
       </tr>
       <tr>
         <td class="tg-dvid" colspan="3">Suspicious behavior</td>
       </tr>
       <tr>
         <td class="tg-0pky">2401</td>
-        <td class="tg-0pky">suspicious_declared_identity</td>
+        <td class="tg-0pky">declared_identity_mismatch</td>
         <td class="tg-0pky">applicant’s identity does not match with the expected one</td>
       </tr>
       <tr>
@@ -506,8 +546,8 @@ info:
       </tr>
       <tr>
         <td class="tg-0pky">2403</td>
-        <td class="tg-0pky">suspicious_consent</td>
-        <td class="tg-0pky">applicant did not seem to consent to the verification</td>
+        <td class="tg-0pky">consent_unclear</td>
+        <td class="tg-0pky">applicant seems to have performed the capture against his will</td>
       </tr>
     </tbody>
     </table>

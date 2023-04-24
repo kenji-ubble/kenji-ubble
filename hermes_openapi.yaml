@@ -804,19 +804,30 @@ paths:
                   application/json:
                     example:
                       {
-                          "specversion": "2.0",
-                          "type": "ai.ubble.identity-verification.capture_completion.v2",
-                          "subject": "idv_5hxpdwegjcbujpth3wdo55d3vm",
-                          "id": "evt_5hxpdwegjcbujpth3wdo55d3vm",
-                          "time": "2023-03-22T17:31:00Z",
-                          "datacontenttype": "application/json",
-                          "data": {
-                              "applicant_id": "apl_5hxpdwegjcbujpth3wdo55d3vm",
-                              "user_journey_id": "usj_5hxpdwegjcbujpth3wdo55d3vm",
-                              "identity_verification_id": "idv_5hxpdwegjcbujpth3wdo55d3vm",
-                              "status": "declined",
-                              "reason_codes": [1001, 2001]
-                          }
+                        "specversion": "2.0",
+                        "type": "ai.ubble.identity-verification.capture_completion.v2",
+                        "subject": "idv_5hxpdwegjcbujpth3wdo55d3vm",
+                        "id": "evt_5hxpdwegjcbujpth3wdo55d3vm",
+                        "time": "2023-03-22T17:31:00Z",
+                        "datacontenttype": "application/json",
+                        "data":
+                          {
+                            "applicant_id": "apl_5hxpdwegjcbujpth3wdo55d3vm",
+                            "user_journey_id": "usj_5hxpdwegjcbujpth3wdo55d3vm",
+                            "identity_verification_id": "idv_5hxpdwegjcbujpth3wdo55d3vm",
+                            "status": "declined",
+                            "reason_codes":
+                              [
+                                {
+                                  "code": 1310,
+                                  "reason": "manipulation_face_blurry",
+                                },
+                                {
+                                  "code": 2102,
+                                  "reason": "document_not_accepted",
+                                },
+                              ],
+                          },
                       }
                     schema:
                       $ref: "#/components/schemas/WipEvent"
@@ -1128,7 +1139,9 @@ components:
         user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
         applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         status: declined
-        reason_codes: [1003, 2001]
+        reason_codes:
+          - { "code": 1310, "reason": "manipulation_face_blurry" }
+          - { "code": 2102, "reason": "document_not_accepted" }
         verified_identity:
           first_names: David
           last_name: Vincent
@@ -1417,10 +1430,20 @@ components:
           description: The content type of the data attribute.
           example: "application/json"
         data:
-          type: string
+          type: object
           description: The event payload.
-          example: '{"applicant_id":"apl_5hxpdwegjcbujpth3wdo55d3vm","user_journey_id":"usj_5hxpdwegjcbujpth3wdo55d3vm","identity_verification_id":"idv_5hxpdwegjcbujpth3wdo55d3vm","status":"declined","reason_codes":[1001,2001]}'
-
+          example:
+            {
+              "applicant_id": "apl_5hxpdwegjcbujpth3wdo55d3vm",
+              "user_journey_id": "usj_5hxpdwegjcbujpth3wdo55d3vm",
+              "identity_verification_id": "idv_5hxpdwegjcbujpth3wdo55d3vm",
+              "status": "declined",
+              "reason_codes":
+                [
+                  { "code": 1310, "reason": "manipulation_face_blurry" },
+                  { "code": 2102, "reason": "document_not_accepted" },
+                ],
+            }
     ApplicantLink:
       type: object
       required: [applicant]
@@ -1520,8 +1543,23 @@ components:
         - checks_aborted
 
     ReasonCode:
+      type: object
+      description: The code indicating why a verification could not be approved.
+      readOnly: true
+      properties:
+        code:
+          $ref: "#/components/schemas/Code"
+        reason:
+          $ref: "#/components/schemas/Reason"
+
+    Reason:
+      type: string
+      description: A descriptive code of the reason code.
+      readOnly: true
+
+    Code:
       type: integer
-      description: Code indicating why a verification could not be approved.
+      description: The numeric code of the reason code.
       readOnly: true
       minimum: 1000
       maximum: 2999

@@ -1526,7 +1526,7 @@ components:
         - checks_in_progress
         - approved
         - declined
-        - new_capture_required
+        - retry_required
         - refused
 
     AttemptStates:

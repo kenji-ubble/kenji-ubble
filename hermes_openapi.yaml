@@ -225,7 +225,7 @@ info:
     | capture_completion | The applicant completed the capture                                                                                               |
     | checks_completion  | We completed the checks                                                                                                           |
     | expiration         | The link expired without applicant being redirected to the web application, please note the default expiration time is 15 minutes |
-    | capture_refused    | The applicant explicitly refused to perform the verification                                                                      |
+    | capture_refusal    | The applicant explicitly refused to perform the verification                                                                      |
     | capture_abortion   | The applicant terminated the capture without completing it                                                                        |
     | checks_inconclusive| The applicant did not provide the assets required to perform the checks                                                           |
     | retry_requested    | You requested a retry for this identity verification                                                                              |

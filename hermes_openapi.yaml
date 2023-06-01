@@ -6,18 +6,21 @@ info:
     url: "https://www.ubble.ai/wp-content/uploads/2021/08/Combo_Ubble_Logo_Exe_RVB-1-1-e1627891718121.png"
   description: |
     # Introduction
-    Welcome to Ubble's API documentation !
+    Welcome to Ubble's API documentation, which will enable you to build a seamless identity verification experience for your customers.
 
-    This API enables you to build a seamless identity verification experience for your customers.
+    The API accepts and returns `application/json` type.
+
+    If you have any questions or if you want to test our product, please contact us: support@ubble.ai.
 
     # Get Started
-    This section describes the easiest way to integrate our API. At the end of this section you will be able to create and get the results of an identity verification.
-
-    ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/doc_diagram.png)
+    This section describes the easiest way to integrate your environment with our API. At the end of this section you will be able to create and get the results of an identity verification.
 
     ## Before you start
     ### Get your credentials
-    We use both mutual TLS and basic authentication. You must then authenticate your calls by including your secret credentials as well as your client certificate and key in API requests.
+
+    We use both mutual Transport Layer Security and basic authentication. You must then authenticate your calls by including your basic authentication credentials ( `client_id` and `client_secret`) and your certificate in API calls.
+
+    Open the dashboard [dashboard](https://dashboard.ubble.ai) and navigate to `Security > Credentials` to create your credentials and your certificate. If you need an account, please contact support@ubble.ai.
 
     Make sure you have an account with us. Once you've signed in, navigate on your dashboard to `Security > Credentials` and create your credentials and certificates.
 
@@ -29,21 +32,22 @@ info:
     For security reasons all our webhook calls are signed, can be whitelisted or can even request an authentication. You will find all details about webhook implementation in the webhook section.
 
     Finally you will need to provide a redirect URL. This URL will be used to redirect the applicant at the end of the verification.
-    This section describes the easiest way to integrate our API. At the end of this section you will be able to create and get the results of an identity verification.
+
+    ## Identity verification flow
+
+    ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/doc_diagram.png)
 
     ## Step 1: Request an identity verification
 
-    The first step is to request an identity verification.
-
-    You will have to include the declared first name and last name of the applicant in your call, as well as the `webhook_url` and `redirect_url` you should have prepared before. All the details to create an identity verification can be found in the [endpoint section](#tag/identity-verifications/operation/create_identity_verification).
-
+    You will have to include the declared first name and last name of the applicant in your call, as well as the `webhook_url` and `redirect_url` you should have prepared before. All the details to create an identity verification can be found in the [endpoint section](#tag/Identity-verifications).
+  
     The call will return an identity verification object and the unique identifier of the identity verification. We strongly advise you to store it in your backend because you will need it to get the detailed results.
 
     ## Step 2: Redirect the applicant
 
-    The identity verification object also includes the `verification_url` in the links attribute. This url will be used to redirect applicants to our web application.
+    The identity verification object also includes the `verification_url` in the `_links` attribute. This URL will be used to redirect applicants to our web application.
 
-    At this step, we strongly advise you to use web redirection. We've built an integration example showcasing how to integrate Ubble in a web app: [ubble-express-integration](https://github.com/ubbleai/integration_examples/tree/master/web).
+    At this step, we strongly advise you to use web redirection. We've built an integration example showcasing [how to integrate Ubble in web app](https://github.com/ubbleai/integration_examples/tree/master/web).
 
     All the details to use another integration can be found in the [integration section](#section/Integration).
 
@@ -51,13 +55,13 @@ info:
 
     When applicants terminate the verification, they are redirected to the `redirect_url` you have defined when creating the identity verification.
 
-    The verification process can be synchronous or asynchronous, and so the results may not be available when the applicant is redirected. At this step, we advise you to create a waiting page.
+    The verification process can be synchronous or asynchronous, and so the results may not be available when the applicant is redirected.
 
     All the details to manage the applicant return can be found in the [integration section](#section/Integration).
 
     ## Step 4: Make your decision
 
-    Thanks to the webhook you have defined you will be notified of each event regarding the identity verification. An event is a change in the verification lifecycle. You will find the list of events in the event section.
+    Thanks to the webhook you have defined, you will be notified of each event regarding the identity verification. An event is a change in the verification lifecycle. You will find the list of events in the event section.
 
     The webhook body will include the event type as well as the `status` of the identity verification. At this step, you should wait for the `status` to be one of `approved`, `declined` or `retry_required`.
 
@@ -65,7 +69,7 @@ info:
 
     If the `status` is `declined`, you should refuse it.
 
-    If the `status` is `retry-required`, you should request a retry using the [retry endpoint](#tag/identity-verifications/operation/retry_identity_verification) and redirect the applicant on the new `verification_url` you will get.
+    If the `status` is `retry-required`, you should request a retry using the [retry endpoint](#tag/Identity-verifications/operation/retry_identity_verification) and redirect the applicant on the new `verification_url` you will get.
 
     For more details see the [identity verification results section](#section/Identity-verification-results).
 
@@ -73,7 +77,7 @@ info:
 
     You may have to get the detailed results, particularly when the verification is `approved`.
 
-    All the details to retrieve an identity verification can be found in the [endpoint section](#tag/identity-verifications/operation/retrieve_identity_verification). You will only need the unique identifier you got when creating the identity verification.
+    All the details to retrieve an identity verification can be found in the [endpoint section](#tag/Identity-verifications/operation/retrieve_identity_verification). You will only need the unique identifier you got when creating the identity verification.
 
     # Integration
     As mentioned in the [get started section](#section/Get-Started), applicants should be redirected toward our web application to perform the verification. In this section you will find all the information you need to make this redirection as seamless as possible.
@@ -86,18 +90,16 @@ info:
     </div>
 
     ## Customization
-    To properly integrate the identity verification, you should customize the user journey with your account manager. You will be able to define: colors, logo, font, button radius and introduction sentence as detailed here: Customise your Ubble Experience - Ubble .
+    To properly integrate the identity verification, you should customize the user journey with your account manager. You will be able to define: colors, logo, font, button radius and introduction sentence as detailed here: [Customise your Ubble Experience - Ubble](https://www.ubble.ai/customise-your-ubble-experience/).
 
-    If you need it, you can create several user journey and provide the user_journey_id when creating an identity verification.
+    If you need it, you can create several user journey and provide the `user_journey_id` when creating an identity verification.
 
     ## Web redirection
 
     ### Integration
     You can redirect the applicant by using web redirection. We support the current versions of all the major browsers.
 
-    We've built an integration example showcasing how to integrate Ubble in a web app:
-
-    - [ubble-express-integration](https://github.com/ubbleai/integration_examples/tree/master/web)
+    We've built an integration example showcasing how to integrate Ubble in a web app [how to integrate Ubble in a web app.](https://github.com/ubbleai/integration_examples/tree/master/web)
 
     Web Redirection is compatible with the following browsers / OS. We do not ensure the compatibility of our service with beta versions of browsers / OS.
 
@@ -124,23 +126,14 @@ info:
 
     Example of redirect URL: `?id=123&event=capture_abortion`
 
-    This event can be: 
+    If the event is `capture_completion`, you will have to wait for the next event to make your decision. You can either ask applicants to perform additional checks, or make them wait until results are available. Please also note that in some cases the `check_completion` event can occur almost simultaneously, and consequently the results can be available when the applicant is redirected.
 
-    - `capture_completion`: the applicant has completed the capture.
 
-    In this case you will have to wait for the next event to make you decision. You can either ask applicants to perform additional checks, or make them wait until results are available.
+    If the event is `capture_abortion` we advise you to request a retry. See the [retry section](#section/Identity-verification-results/Retry-management) to implement it.
 
-    Please also note that in some cases the `check_completion` event can occur almost simultaneously, and consequently the results can be available when the applicant is redirected.
+    If the event is `capture_refusal` we advise you to propose an alternative to the applicant.
 
-    - `capture_abortion`:  the applicant terminated the capture without completing it.
-
-    In this case we advise you to request a retry. See the [retry section](#section/Identity-verification-results/Retry-management) to implement it.
-
-    - `capture_refusal`: the applicant explicitly refused to perform the capture.
-
-    In this case we advise you to propose an alternative to the applicant.
-
-    For more details about events please see the [lifecycle section](#section/Identity-verification-results/Lifecycle).
+    For more details about these events please see the [lifecycle section](#section/Identity-verification-results/Lifecycle).
 
     ## Webview
     For a more integrated user experience in your mobile application, you can redirect the applicant using a webview.
@@ -152,18 +145,16 @@ info:
 
     On iOS <= 12, due to limited webview compatibility, Ubble verification process must be completed in Safari App.
 
-    For iOS Native you will have to open safari using the open method:
+    For iOS Native you will have to open Safari using the open method:
     ```swift
     UIApplication.shared.open(identificationUrl, options: [:])
     ```
 
     ### Android
-    You will find here an integration example:
-    - [android - webview version >= 53](https://github.com/ubbleai/integration_examples/tree/master/android)
+    You will find here [an integration example for android - webview version >= 53](https://github.com/ubbleai/integration_examples/tree/master/android)
 
     ### React-native
-    You will find here an integration example:
-    - [react-native - react-native webview >= 8.0](https://github.com/ubbleai/integration_examples/tree/master/UbbleReactNative)
+    You will find here [an integration example for react-native - react-native webview >= 8.0](https://github.com/ubbleai/integration_examples/tree/master/UbbleReactNative)
 
     ### Flutter
 
@@ -178,20 +169,15 @@ info:
 
     Example of redirect URL: `?id=123&event=capture_abortion`
 
-    This event can be: 
-    - `capture_completion`: the applicant has completed the capture. 
+    If the event is `capture_completion`, you will have to wait for the next event to make your decision. You can either ask applicants to perform additional checks, or make them wait until results are available. 
 
-    In this case you will have to wait for the next event to make you decision. You can either ask applicants to perform additional checks, or make them wait until results are available. 
+    Please also note that in some cases the `check_completion` event can occur almost simultaneously, and consequently the results can be available when the applicant is redirected. 
 
-    Please also note that in some cases the check_completion event can occur almost simultaneously, and consequently the results can be available when the applicant is redirected. 
+    If the event is `capture_abortion`,  we advise you to request a retry. See the [retry section](#section/Identity-verification-results/Retry-management) to implement it. 
 
-    - `capture_abortion`:  the applicant terminated the capture without completing it. 
+    If the event is `capture_refusal`, we advise you to propose an alternative to the applicant.
 
-    In this case we advise you to request a retry. See the [retry section](#section/Identity-verification-results/Retry-management) to implement it. 
-
-    - `capture_refusal`: the applicant explicitly refused to perform the capture. 
-
-    In this case we advise you to propose an alternative to the applicant. 
+    For more details about these events, please see the [lifecycle section](#section/Identity-verification-results/Lifecycle)
 
     ## Iframe integration
     <div style="padding: 0px 0px 14px 14px ; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
@@ -204,13 +190,16 @@ info:
     ## Mobile redirection
     Both for security reasons and because it improves the conversion rate, we redirect all applicants from desktop to mobile. Nevertheless we ensure a synchronisation between desktop and mobile to redirect applicants to their desktop at the end of the journey.
 
-    Applicants can use either QR code or SMS sending to perform this redirection. To make the SMS redirection smoother, you can provide the phone number of the applicant when creating an identity verification: we use it to prefill the associated field during the redirection. Fore more details see the [identity verification endpoint](#tag/identity-verifications/operation/create_identity_verification).
+    Applicants can use either QR code or SMS sending to perform this redirection. To make the SMS redirection smoother, you can provide the phone number of the applicant when creating an identity verification: we use it to prefill the associated field during the redirection. For more details see the [identity verification endpoint](#tag/Identity-verifications/operation/create_identity_verification).
 
     # Identity verification results
 
+    This section details all the information you can get about an identity verification.
+    
     ## Lifecycle
 
-    To make your decision you should mainly use events and `status`. This information is directly available in the webhook body.
+    The life cycle of a verification is defined by the successive events and status of the verification.
+    This information is directly available in the webhook body.
 
     ![](https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/life%20cycle%20diagram.png)
 
@@ -297,12 +286,13 @@ info:
       <tr>
         <td class="tg-0pky">1001</td>
         <td class="tg-0pky">applicant_refusal</td>
-        <td class="tg-0pky">applicant explicitly refused to do the verification process by clicking on the dedicated button</td>
+        <td class="tg-0pky">Applicant explicitly refused to do the verification process by clicking on the dedicated button</td>
       </tr>
     </tbody>
     </table>
 
     ### Status: `retry_required`
+    Applicant engagement issue
     <table class="tg">
     <colgroup>
       <col class="one" />
@@ -318,37 +308,37 @@ info:
     </thead>
     <tbody>
       <tr>
-        <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Applicant engagement issue</span></td>
+        <td class="tg-dvid" colspan="3">Applicant engagement issue</td>
       </tr>
       <tr>
         <td class="tg-0pky">1101</td>
         <td class="tg-0pky">applicant_never_started</td>
-        <td class="tg-0pky">applicant was probably not redirected to the application and never started the flow</td>
+        <td class="tg-0pky">Applicant was probably not redirected to the application and never started the flow</td>
       </tr>
       <tr>
         <td class="tg-0pky">1111</td>
         <td class="tg-0pky">applicant_not_ready</td>
-        <td class="tg-0pky">applicant explicitly stated that he/she wanted to perform the identity verification later by clicking on the dedicated button</td>
+        <td class="tg-0pky">Applicant explicitly stated that he/she wanted to perform the identity verification later by clicking on the dedicated button</td>
       </tr>
       <tr>
         <td class="tg-0pky">1112</td>
         <td class="tg-0pky">applicant_no_document</td>
-        <td class="tg-0pky">applicant explicitly stated that he/she did not have their document with him by clicking on the dedicated button</td>
+        <td class="tg-0pky">Applicant explicitly stated that they did not have their document with them by clicking on the dedicated button</td>
       </tr>
       <tr>
         <td class="tg-0pky">1113</td>
         <td class="tg-0pky">camera_access_refused</td>
-        <td class="tg-0pky">applicant did not give access to the camera despite the dedicated instructions</td>
+        <td class="tg-0pky">Applicant did not give access to the camera despite the dedicated instructions</td>
       </tr>
       <tr>
         <td class="tg-0pky">1121</td>
         <td class="tg-0pky">drop_before_capture</td>
-        <td class="tg-0pky">applicant left the process before the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
+        <td class="tg-0pky">Applicant left the process before the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
       </tr>
       <tr>
         <td class="tg-0pky">1131</td>
         <td class="tg-0pky">drop_during_capture</td>
-        <td class="tg-0pky">applicant left the process during the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
+        <td class="tg-0pky">Applicant left the process during the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Technical issue</span></td>
@@ -356,17 +346,17 @@ info:
       <tr>
         <td class="tg-0pky">1201</td>
         <td class="tg-0pky">connexion_insufficient</td>
-        <td class="tg-0pky">applicant did not have a sufficient connexion to perform the capture</td>
+        <td class="tg-0pky">Applicant did not have a sufficient connexion to perform the capture</td>
       </tr>
       <tr>
         <td class="tg-0pky">1202</td>
         <td class="tg-0pky">browser_not_supported</td>
-        <td class="tg-0pky">applicant’s browser was not suitable for video streaming</td>
+        <td class="tg-0pky">Applicant’s browser was not suitable for video streaming</td>
       </tr>
       <tr>
         <td class="tg-0pky">1203</td>
         <td class="tg-0pky">camera_not_found</td>
-        <td class="tg-0pky">applicant’s device did not have any camera</td>
+        <td class="tg-0pky">Applicant’s device did not have any camera</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Document capture issue</span></td>
@@ -374,37 +364,37 @@ info:
       <tr>
         <td class="tg-0pky">1301</td>
         <td class="tg-0pky">document_video_blurry</td>
-        <td class="tg-0pky">applicant’s document video is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+        <td class="tg-0pky">Applicant’s document video is too blurry<br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
       </tr>
       <tr>
         <td class="tg-0pky">1302</td>
         <td class="tg-0pky">document_video_lighting_issue</td>
-        <td class="tg-0pky">applicant performed the document capture under poor lighting conditions</td>
+        <td class="tg-0pky">Applicant performed the document capture under poor lighting conditions</td>
       </tr>
       <tr>
         <td class="tg-0pky">1310</td>
         <td class="tg-0pky">manipulation_face_blurry</td>
-        <td class="tg-0pky">applicant has not captured the front of the document</td>
+        <td class="tg-0pky">Applicant has not captured the front of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1311</td>
         <td class="tg-0pky">document_back_not_captured</td>
-        <td class="tg-0pky">applicant has not captured the back of the document</td>
+        <td class="tg-0pky">Applicant has not captured the back of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1312</td>
         <td class="tg-0pky">document_partially_hidden</td>
-        <td class="tg-0pky">applicant hides part of the document</td>
+        <td class="tg-0pky">Applicant hides part of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1313</td>
         <td class="tg-0pky">document_not_tilted</td>
-        <td class="tg-0pky">applicant did not present a dynamic view of the document</td>
+        <td class="tg-0pky">Applicant did not present a dynamic view of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">1314</td>
         <td class="tg-0pky">document_instructions_not_followed</td>
-        <td class="tg-0pky">applicant did not follow the instructions when submitting their document</td>
+        <td class="tg-0pky">Applicant did not follow the instructions when submitting their document</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Face capture issue</span></td>
@@ -412,32 +402,32 @@ info:
       <tr>
         <td class="tg-0pky">1401</td>
         <td class="tg-0pky">face_video_blurry</td>
-        <td class="tg-0pky">applicant’s video of their face is too blurry <br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
+        <td class="tg-0pky">Applicant’s video of their face is too blurry <br>(mostly due to too much movement but if this error persists the camera quality might be at fault)</td>
       </tr>
       <tr>
         <td class="tg-0pky">1402</td>
         <td class="tg-0pky">face_video_lighting_issue</td>
-        <td class="tg-0pky">applicant performed their id verification under poor lighting conditions</td>
+        <td class="tg-0pky">Applicant performed their identity verification under poor lighting conditions</td>
       </tr>
       <tr>
         <td class="tg-0pky">1410</td>
         <td class="tg-0pky">face_not_captured</td>
-        <td class="tg-0pky">applicant has not presented a face</td>
+        <td class="tg-0pky">Applicant has not presented a face</td>
       </tr>
       <tr>
         <td class="tg-0pky">1411</td>
         <td class="tg-0pky">face_partially_hidden</td>
-        <td class="tg-0pky">applicant did not show the full front view of their face</td>
+        <td class="tg-0pky">Applicant did not show the full front view of their face</td>
       </tr>
       <tr>
         <td class="tg-0pky">1412</td>
         <td class="tg-0pky">face_not_turned</td>
-        <td class="tg-0pky">applicant did not move to prove the liveness</td>
+        <td class="tg-0pky">Applicant did not move to prove the liveness</td>
       </tr>
       <tr>
         <td class="tg-0pky">1413</td>
         <td class="tg-0pky">face_instructions_not_followed</td>
-        <td class="tg-0pky">applicant did not follow the instructions when submitting their face</td>
+        <td class="tg-0pky">Applicant did not follow the instructions when submitting their face</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Internal error</span></td>
@@ -445,7 +435,7 @@ info:
       <tr>
         <td class="tg-0pky">1901</td>
         <td class="tg-0pky">internal_error</td>
-        <td class="tg-0pky">an internal error prevents us from completing the verification, we do our best to reduce the occurrence of this case</td>
+        <td class="tg-0pky">An internal error prevents us from completing the verification, we do our best to reduce the occurrence of this case</td>
       </tr>
     </tbody>
     </table>
@@ -471,65 +461,66 @@ info:
       <tr>
         <td class="tg-0pky">2101</td>
         <td class="tg-0pky">document_expired</td>
-        <td class="tg-0pky">applicant presented an expired document</td>
+        <td class="tg-0pky">Applicant presented an expired document</td>
       </tr>
       <tr>
         <td class="tg-0pky">2102</td>
         <td class="tg-0pky">document_not_accepted</td>
-        <td class="tg-0pky">applicant presented a document which is not accepted</td>
+        <td class="tg-0pky">Applicant presented a document which is not accepted</td>
       </tr>
       <tr>
         <td class="tg-0pky">2103</td>
         <td class="tg-0pky">document_damaged</td>
-        <td class="tg-0pky">applicant has submitted a damaged document</td>
+        <td class="tg-0pky">Applicant has submitted a damaged document</td>
       </tr>
       <tr>
         <td class="tg-0pky">2201</td>
         <td class="tg-0pky">document_photocopy</td>
-        <td class="tg-0pky">applicant presented a photocopy of the document</td>
+        <td class="tg-0pky">Applicant presented a photocopy of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">2202</td>
         <td class="tg-0pky">document_screenshot</td>
-        <td class="tg-0pky">applicant presented the document on a screen</td>
+        <td class="tg-0pky">Applicant presented the document on a screen</td>
       </tr>
       <tr>
         <td class="tg-dvid" colspan="3">Identity fraud</td>
       </tr>
+
       <tr>
         <td class="tg-0pky">2301</td>
         <td class="tg-0pky">document_counterfeit</td>
-        <td class="tg-0pky">applicant has submitted a counterfeit or falsification</td>
+        <td class="tg-0pky">Applicant has submitted a counterfeit or falsification</td>
       </tr>
       <tr>
         <td class="tg-0pky">2302</td>
         <td class="tg-0pky">document_stolen</td>
-        <td class="tg-0pky">applicant presented a document declared as stolen or lost</td>
+        <td class="tg-0pky">Applicant presented a document declared as stolen or lost</td>
       </tr>
       <tr>
         <td class="tg-0pky">2303</td>
         <td class="tg-0pky">document_swap</td>
-        <td class="tg-0pky">applicant presented the front and back of two different documents</td>
+        <td class="tg-0pky">Applicant presented the front and back of two different documents</td>
       </tr>
       <tr>
         <td class="tg-0pky">2304</td>
         <td class="tg-0pky">face_mismatch</td>
-        <td class="tg-0pky">applicant does not match the photograph of the document</td>
+        <td class="tg-0pky">Applicant does not match the photograph of the document</td>
       </tr>
       <tr>
         <td class="tg-0pky">2305</td>
         <td class="tg-0pky">face_not_live</td>
-        <td class="tg-0pky">applicant has presented someone else's face on a screen or on a physical medium</td>
+        <td class="tg-0pky">Applicant has presented a photography or a video of someone else's face on a screen or on a physical medium</td>
       </tr>
       <tr>
         <td class="tg-0pky">2306</td>
         <td class="tg-0pky">face_alteration</td>
-        <td class="tg-0pky">applicant has altered his/her appearance</td>
+        <td class="tg-0pky">Applicant has altered their appearance</td>
       </tr>
       <tr>
         <td class="tg-0pky">2307</td>
         <td class="tg-0pky">videos_digital_alteration</td>
-        <td class="tg-0pky">applicant has digitally altered the videos</td>
+        <td class="tg-0pky">Applicant has digitally altered the videos</td>
       </tr>
       <tr>
         <td class="tg-dvid" colspan="3">Suspicious behavior</td>
@@ -537,17 +528,17 @@ info:
       <tr>
         <td class="tg-0pky">2401</td>
         <td class="tg-0pky">declared_identity_mismatch</td>
-        <td class="tg-0pky">applicant’s identity does not match with the expected one</td>
+        <td class="tg-0pky">Applicant’s identity does not match with the expected one</td>
       </tr>
       <tr>
         <td class="tg-0pky">2402</td>
         <td class="tg-0pky">suspicious_device</td>
-        <td class="tg-0pky">applicant used a device that has been technically altered</td>
+        <td class="tg-0pky">Applicant used a device that has been technically altered</td>
       </tr>
       <tr>
         <td class="tg-0pky">2403</td>
         <td class="tg-0pky">consent_unclear</td>
-        <td class="tg-0pky">applicant seems to have performed the capture against his will</td>
+        <td class="tg-0pky">Applicant seems to have performed the capture against their will</td>
       </tr>
     </tbody>
     </table>
@@ -555,7 +546,7 @@ info:
     ## Retry management 
     When the `status` of the identity verification is `retry_required` we advise you to request a retry. You will need the `identity_verification_id`, as well as a webhook and a redirect URL.
 
-    All information to request a retry can be found in the [endpoint section](#tag/identity-verifications/operation/retry_identity_verification).
+    All information to request a retry can be found in the [endpoint section](#tag/Identity-verifications/operation/retry_identity_verification).
 
     We strongly advise you to use the `reason_codes` to guide the `applicant` toward success. For example, if the reason codes indicate that the connection of the `applicant` is not sufficient, you should give this information to the `applicant`.
 
@@ -568,9 +559,11 @@ info:
 
     ## Detailed results
 
+    If you need, you can get the full results by using the [retrieve an identity verification endpoint](#tag/Identity-verifications/operation/retrieve_identity_verification). 
+    
     ### Retrieve an identification
-
-    If you need, you can get the full results by using the [retrieve an identity verification endpoint](#tag/identity-verifications/operation/retrieve_identity_verification). It will mainly include the following information:
+    
+    The endpoint will mainly include the following information.
 
     | Attribute    | Description                                                                                                    |
     |--------------|----------------------------------------------------------------------------------------------------------------|
@@ -584,71 +577,90 @@ info:
     Please note that the information we extract from the document can be configured with your account manager.
 
     ### API response signing
-    If enabled in your configuration (Contact your account manager in order to activate the response signature), Ubble API responses will be signed. This signature can be used to verify that the api response has not been altered and has been issued by Ubble and not by anyone else. To also verify that assets data (images) has not been altered and comes from Ubble, the assets hash has been added to the response body, and after verification of the signature, the images can be hashed and compared to the hashes in the verified response. Ubble uses an asymetric key signing algorithm of type ECDSA with a sha2-512 hashing algorithm. Assets are hashed using the sha2-256 hashing algorithm.
 
-    #### Signing key policy
-    A signing key will be created for each configuration and for each environment (Live and Test). The public key (used for signature verification) associated with the private key that is managed by ubble can be downloaded from the client dashboard. The private key has a validity of 1 year and will be automatically renewed. Upon renewal the public key will also change and has to be re-downloaded from the dashboard. You can detect a key rotation by looking at the signature version in the api response, to verify that response you will need to use the public key with the same version. All versions of the public key can be downloaded from the dashboard so you don't have to worry about losing older versions.
+    The API response signature can be activated by your account manager.
+    
+    This signature can be used to verify that the API response has been issued by Ubble and has not been altered.
 
     #### Verifying Response signature
 
-    The `Ubble-Signature` header contains the timestamp of the request (`1635236316.377888`), the signing key identifier and version (`3456-live-v1`) as well as the signature itself (`5257a869a7ecebeda35affa62cdcb3fa51cad7e77a0e56ff546d0ae8e108d8bd`).
+    The `Ubble-Signature` header contains:
+    - the timestamp of the request, for example, `1635236316.377888`
+    - the signing key identifier and version, for example, `3456-live-v1`
+    - the signature itself, for example, `5257a869a7ecebeda35affa62cdcb3fa51cad7e77a0e56ff546d0ae8e108d8bd`
 
-    format:
+    Format of response signature:
     ```
       <timestamp>:<configuration id>-<test or live identification>-<key version>:<signature>
     ```
 
-    example:
+    Response signature example:
     ```
       1635236316.377888:3456-live-v1:5257a869a7ecebeda35affa62cdcb3fa51cad7e77a0e56ff546d0ae8e108d8bd
     ```
 
-    The signature can be verified on your side by verifying the signature against the received body using the `public key` corresponding to the signature key. You will need the Public key corresponding to the signature version, that you can find on your dashboard configuration page. There is one for test identifications and one for live identifications.
+    We use an asymmetric key signing algorithm of type ECDSA with a sha2-512 hashing algorithm to sign the API response. 
 
-    See the example in python if you need help.
+    On your side, you can verify the signature against the received body by using the public key associated with the signature key. There are two public keys, for test identifications and live identifications respectively. You can download them from the client dashboard. 
 
-    #### Verifying Assets
-    To verify that the assets that correspond to the received response are correct, the received images have to be hashed using a specific algorithm, this hash must be the same as the hash that was sent with the signed response.
+    The keys have a validity of one year and will be automatically renewed. Upon renewal you will have to re-download the public key from the dashboard. 
 
-    Be aware that all two verification stages must be valid (api response signature and assets hash) for the data to be valid.
+    To detect a key rotation, look at the signature version in the API response. To verify that response, use the public key with the same version of the signature key. 
 
+    Don’t worry about losing older versions of the public key, you can download all versions of the public key from the dashboard.
+   
+    #### Verifying Images
+    You can also verify that the images has not been altered by using the image hashes available in the API response body.
+    
+    Images are hashed using the sha2-256 hashing algorithm and the same signature key than the one used to sign the API response.
+    <div style="padding: 0px 0px 14px 14px ; background-color: #fff6d9; border-color: #f8c92e; color: #666; display: flex; align-items: center;">
+    <div style="margin-right: 20px; margin-top: 14px; font-size: 24px; color: #f8c92e; vertical-align: center;">⚠️</div>
+    <div style="display: table-cell; vertical-align: center;">
+      <p>For the data to be valid, both verification stages must be valid : the response signature verification and the images verification.</p>
+    </div>
+    </div>
+  
     ## Data management
-    You can configure data retention together with your account manager, in accordance with your purpose for using the data. At the end of this time, the identity verifications are anonymized, which means all personal or sensitive data are deleted. The default storage time is 90 days. 
-
-    If needed, you can also request the anonymization of an identity verification through the [anonymization endpoint](#tag/identity-verifications/operation/anonymize_identity_verification). 
+    You can configure data retention together with your account manager, in accordance with your purpose for using the data. At the end of this time, the identity verifications are anonymized, which means all personal or sensitive data are deleted. The default storage time is 90 days.
+  
+    If needed, you can also request the anonymization of an identity verification through the [anonymization endpoint](#tag/Identity-verifications/operation/anonymize_identity_verification). 
 
     # Applicants
+
+    You can use applicant object to match the verifications with your customer database. 
 
     ## Creation
     When you create an identity verification, an applicant is automatically created and the call returns an `applicant_id`.
 
-    You can also directly create an applicant using the [create endpoint](#tag/applicants/operation/create_applicant). In this case you will be able to define the `external_applicant_id`, that should correspond to unique identifier of the applicant in your database, as well as the `mail` of the applicant.
+    You can also directly create an applicant, using the [create endpoint](#tag/applicants/operation/create_applicant). In this case you will be able to define the `external_applicant_id`, that should correspond to the unique identifier of the applicant in your database, as well as the `mail` of the applicant.
 
     If the applicant is already created, you can also patch this information using the [update endpoint](#tag/applicants/operation/update_applicant).
 
     ## Applicant file 
     You can request several verifications for the same applicant. You only need to indicate the concerned `applicant_id` when creating the verification.
 
-    If and only if an identity verification is `approved`, the verified identity is added to the `applicant` file and you can find this information using the [retrieve an applicant endpoint](#tag/applicants/operation/retrieve_applicant).
+    If and only if an identity verification is `approved`, the verified identity is added to the `applicant` file. To find this information, use the [retrieve an applicant endpoint.](#tag/applicants/operation/retrieve_applicant).
 
     # Webhooks
 
     ## Configuration
-    You need to provide the webhook you want to be notified on when creating an identity verification. You will be notified of each event on identity verifications. For more details see the [event section](#section/Identity-verification-results/Events).
+    When creating an identity verification, you need to provide the webhook you want to be notified on. 
+  
+    You will be notified of each event on identity verifications. For more details see the [event section](#section/Identity-verification-results/Events).
 
-    To help you integrate your webhook you can trigger it with the standard answers, see [notify endpoint](#tag/identity-verifications/operation/notify_identity_verification).
+    To help you integrate your webhook you can trigger it with the standard answers, see [notify endpoint](#tag/Identity-verifications/operation/notify_identity_verification).
 
     ## Retry
-    We expect that you return us a 200 or 201 status code within 10 seconds before we retry, up to 2 retries will be performed. If needed, webhook notifications can be resend manually using the [notify endpoint](#tag/identity-verifications/operation/notify_identity_verification).
+    We expect that you will return us a 200 or 201 status code within 10 seconds before we retry, up to 2 retries will be performed. If needed, you can trigger webhook notifications manually using the [notify endpoint](#tag/Identity-verifications/operation/notify_identity_verification).
 
     ## Body 
     The webhook body contains the following information: 
 
     | Attribute                | Description                                   |
     |--------------------------|-----------------------------------------------|
-    | applicant_id             | id of the applicant, useful to recognize them |
-    | user_journey_id          | id of the user journey                        |
-    | identity_verification_id | id of the identity verification               |
+    | applicant_id             | ID of the applicant, useful to recognize them |
+    | user_journey_id          | ID of the user journey                        |
+    | identity_verification_id | ID of the identity verification               |
     | status                   | status of the identity verification           |
     | reason_codes             | list of reason codes                          |
 
@@ -681,33 +693,39 @@ info:
 
     The timestamp is prefixed by `ts=`, and the signature is prefixed by `v1=`. Example: `ts=1492774577,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd`
 
-    To compare the signature, you will need the `webhook secret`, that you can find on your dashboard configuration page. There is one for secret for test identifications and one for live identifications.
-
-    See the example in python if you need help.
+    To compare the signature, you will need the webhook secret signature. There is one for signature for test identifications and one for live identifications. You can find them in the dashboard.
 
     ## Security
-    ### Webhook ip whitelisting
+    ### Webhook IP whitelisting
     For security purposes, if you need to whitelist our incoming api calls, see our [public ip](https://docs.outscale.com/en/userguide/OUTSCALE-Public-IPs.html).
 
     ### Webhooks Authentication
-    You can also choose to authentify our webhook calls against OAuth2. Please contact your account manager in order set up the authentication. You will need to provide an URL Token, a `CLIENT_ID`, a `CLIENT_SECRET` and optionally a refresh token URL.
+    You can also choose to authentify our webhook calls against OAuth2. 
+    Please contact your account manager in order set up the authentication. 
+    You will need to provide:
+    - URL Token, 
+    - `CLIENT_ID`, 
+    - `CLIENT_SECRET` 
+    - (Optionally) A refresh token URL.
 
     # API standards
 
+    This section describes the standards we use to ensure the consistency of our API. 
+    
     ## Required tag
     ### required
-    Attributes tagged as `required` **MUST** be present in requests and reponses.
+    Attributes tagged as `required` **MUST** be present in requests and responses.
 
     ### null values
     Attributes not marked as `required` can be null. In that case the attribute is not sent in the response.
 
-    ## Ressources identifiers
+    ## Resources identifiers
     ### Format
     `{prefix}_{lower-case base-32 encoded GUID}`
 
-    ### Ressources identifiers are formatted as follows
+    ### Resources identifiers formatting
 
-    | ressource name         | prefix | example                         |
+    | resource name          | prefix | example                         |
     |------------------------|--------|---------------------------------|
     | applicants             | apl    | apl_tkoi5db4hryu5cei5vwoabr7we  |
     | identity-verifications | idv    | idv_tkoi5db4hryu5cei5vwoabr7we  |
@@ -740,9 +758,9 @@ info:
 
     | name         | format                                                                                                                                              | example                                                                     |
     |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-    | countries    | - apply ISO 3166-1 alpha-2                                                                                                                          | FR                                                                          |
-    | date-time    | - apply ISO8601<br /> - always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
-    | phone number | - country code with or without the '+' sign (+33 or 33 or 0033 should be valid) <br /> - number with potential spaces, hyphens or trailing zero(s)  | {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> }  |
+    | countries    | - Apply ISO 3166-1 alpha-2                                                                                                                          | FR                                                                          |
+    | date-time    | - Apply ISO8601<br /> - Always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
+    | phone number | - Country code with '+' sign (+33 for example) <br /> - Number with potential spaces, hyphens or trailing zero(s)  | {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> }  |
 
   version: 2.0.0
 
@@ -758,16 +776,15 @@ tags:
 x-tagGroups:
   - name: Endpoints documentation
     tags:
-      - identity verifications
-      - applicants
-
+      - Identity verifications
+      - Applicants
 paths:
-  /identity-verifications:
+  /Identity-verifications:
     post:
       tags:
-        - identity verifications
+        - Identity verifications
       summary: Create an identity verification
-      description: Create an identity verification.
+      description: This endpoint allows you to create and identity verification. You should get a `201` response and the identity verification resource containing the `_links/verification_url`.
       operationId: create_identity_verification
       requestBody:
         required: true
@@ -837,10 +854,10 @@ paths:
                 "201":
                   description: Your server returns this code if it accepts the callback.
 
-  /identity-verifications/{identity_verification_id}/retry:
+  /Identity-verifications/{identity_verification_id}/retry:
     post:
       tags:
-        - identity verifications
+        - Identity verifications
       summary: Retry an identity verification
       description: |
         This endpoint allows you to retry an identification verification with the `retry_required` status.
@@ -849,7 +866,7 @@ paths:
 
         You will need to provide the ID of the failed verification in the URL.
 
-        The on success, the enpoint returns a `200` and the IdentityVerification ressource containing the new `_links/verification_url`
+        You should get a `200` response and the identity verification resource containing the new `_links/verification_url`
 
       operationId: retry_identity_verification
       requestBody:
@@ -884,12 +901,12 @@ paths:
         "500":
           description: An error occurred while retrying the verification
 
-  /identity-verifications/{identity_verification_id}:
+  /Identity-verifications/{identity_verification_id}:
     get:
       tags:
-        - identity verifications
+        - Identity verifications
       summary: Retrieve an identity verification
-      description: Retrieve an identity verification
+      description: This endpoint allows you to get the detailed results of an identity verification.
       operationId: retrieve_identity_verification
       parameters:
         - name: identity_verification_id
@@ -911,10 +928,10 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/IdentityVerification"
 
-  /identity-verifications/{identity_verification_id}/anonymize:
+  /Identity-verifications/{identity_verification_id}/anonymize:
     post:
       tags:
-        - identity verifications
+        - Identity verifications
       summary: Anonymize an identity verification
       description: Anonymize the personal data of an identity verification with the specified ID.
       operationId: anonymize_identity_verification
@@ -924,7 +941,7 @@ paths:
           description: ID of the identity verification to anonymize
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "202":
           description: Identity verification anonymization requested
@@ -950,22 +967,20 @@ paths:
         "500":
           description: Internal server error
 
-  /identity-verifications/{identity_verification_id}/notify:
+  /Identity-verifications/{identity_verification_id}/notify:
     post:
       tags:
-        - identity verifications
+        - Identity verifications
       summary: Request webhook notification
       operationId: notify_identity_verification
-      description: |
-        - It can be used for identity verification regardless of their statuses.
-        - It initiates a webhook call containing the latest event associated with the identity verification.
+      description: This endpoint can be used to initiate a webhook call containing the latest event of an identity verification.
       parameters:
         - name: identity_verification_id
           in: path
           description: ID of the identity verification to notify
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         content:
           application/json:
@@ -982,9 +997,9 @@ paths:
   /applicants:
     post:
       tags:
-        - applicants
+        - Applicants
       summary: Create an Applicant
-      description: Create an Applicant
+      description: This section describes all endpoints related to applicants. It will enable you to create and manage applicant objects.
       operationId: create_applicant
       requestBody:
         content:
@@ -1025,7 +1040,7 @@ paths:
   /applicants/{applicant_id}:
     get:
       tags:
-        - applicants
+        - Applicants
       summary: Retrieve an Applicant
       description: Retrieve an Applicant
       operationId: retrieve_applicant
@@ -1051,7 +1066,7 @@ paths:
 
     patch:
       tags:
-        - applicants
+        - Applicants
       summary: Update an Applicant
       description: Update an Applicant
       operationId: update_applicant
@@ -1084,6 +1099,37 @@ paths:
           description: Applicant not found
         "400":
           description: Bad request. One or more input parameters are invalid
+        "500":
+          description: Internal server error
+
+  /applicants/{applicant_id}/anonymize:
+    post:
+      tags:
+        - Applicants
+      summary: Anonymize an Applicant
+      description: Anonymize the personal data of an applicant with the specified ID.
+      operationId: anonymize_applicant
+      parameters:
+        - name: applicant_id
+          in: path
+          description: ID of the applicant to anonymize
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: applicant anonymized succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Applicant"
+              examples:
+                Always replies:
+                  $ref: "#/components/examples/applicant_response_body_anonymized"
+        "404":
+          description: Identity verification not found
+        "400":
+          description: Bad request. The applicant cannot be anonymized.
         "500":
           description: Internal server error
 
@@ -1166,7 +1212,7 @@ components:
         redirect_url: https://myweb.site?query-param=hello
         _links:
           self:
-            href: "https://api.ubble.ai/v2/identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
+            href: "https://api.ubble.ai/v2/Identity-verifications/idv_tkoi5db4hryu5cei5vwoabr7we"
           applicant:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
           verification_url:
@@ -1188,6 +1234,15 @@ components:
           self:
             href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
 
+    applicant_response_body_anonymized:
+      value:
+        id: apl_tkoi5db4hryu5cei5vwoabr7we
+        created_on: 2017-07-21T17:32:28Z
+        modified_on: 2017-07-21T17:40:32Z
+        external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
+        _links:
+          self:
+            href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
     address_example_american:
       value:
         address_line1: 4022 Laguna St
@@ -1646,7 +1701,7 @@ components:
     PhonePrefix:
       type: string
       format: international phone prefix
-      pattern: ^((\+)|(00))?(\d+)$
+      pattern: ^\+(\d+)$
       example: "+33"
 
     DomesticPhoneNumber:
@@ -1682,13 +1737,13 @@ components:
       required: [created_on, modified_on]
       properties:
         created_on:
-          description: UTC Date time when the ressource was created
+          description: UTC Date time when the resource was created
           type: string
           format: date-time
           example: 2017-07-21T17:32:28Z
           readOnly: true
         modified_on:
-          description: UTC Date time when the ressource was modified
+          description: UTC Date time when the resource was modified
           type: string
           format: date-time
           example: 2017-07-21T17:40:32Z

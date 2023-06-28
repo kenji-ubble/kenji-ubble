@@ -3,7 +3,7 @@ openapi: 3.0.3
 info:
   title: Hermes - the identity verification API
   x-logo:
-    url: "https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/CKO_Logo_Navy_RGB.png"
+    url: "https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/CKO_clean.png"
   description: |
     # Introduction
     Welcome to the checkout.com identity verification (ex ubble) API documentation, which will enable you to build a seamless identity verification experience for your customers.

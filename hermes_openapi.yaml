@@ -3,10 +3,10 @@ openapi: 3.0.3
 info:
   title: Hermes - the identity verification API
   x-logo:
-    url: "https://www.ubble.ai/wp-content/uploads/2021/08/Combo_Ubble_Logo_Exe_RVB-1-1-e1627891718121.png"
+    url: "https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/CKO_Logo_Navy_RGB.png"
   description: |
     # Introduction
-    Welcome to Ubble's API documentation, which will enable you to build a seamless identity verification experience for your customers.
+    Welcome to the checkout.com identity verification (ex ubble) API documentation, which will enable you to build a seamless identity verification experience for your customers.
 
     The API accepts and returns `application/json` type.
 
@@ -18,9 +18,9 @@ info:
     ## Before you start
     ### Get your credentials
 
-    We use both mutual Transport Layer Security and basic authentication. You must then authenticate your calls by including your basic authentication credentials ( `client_id` and `client_secret`) and your certificate in API calls.
+    We use both mutual Transport Layer Security and basic authentication. You must then authenticate your calls by including your basic authentication credentials ( `client_id` and `client_secret`) and your mTLS certificate in API calls.
 
-    Open the dashboard [dashboard](https://dashboard.ubble.ai) and navigate to `Security > Credentials` to create your credentials and your certificate. If you need an account, please contact support@ubble.ai.
+    Open the dashboard [dashboard](https://dashboard.ubble.ai) and navigate to the "security" tab to create your credentials and your certificate. If you need an account, please contact support@ubble.ai.
 
     Make sure you have an account with us. Once you've signed in, navigate on your dashboard to `Security > Credentials` and create your credentials and certificates.
 
@@ -39,7 +39,7 @@ info:
 
     ## Step 1: Request an identity verification
 
-    You will have to include the declared first name and last name of the applicant in your call, as well as the `webhook_url` and `redirect_url` you should have prepared before. All the details to create an identity verification can be found in the [endpoint section](#tag/Identity-verifications).
+    You will have to include the declared name of the applicant in your call, as well as the `webhook_url` and `redirect_url` you should have prepared before. All the details to create an identity verification can be found in the [endpoint section](#tag/Identity-verifications).
   
     The call will return an identity verification object and the unique identifier of the identity verification. We strongly advise you to store it in your backend because you will need it to get the detailed results.
 
@@ -47,7 +47,7 @@ info:
 
     The identity verification object also includes the `verification_url` in the `_links` attribute. This URL will be used to redirect applicants to our web application.
 
-    At this step, we strongly advise you to use web redirection. We've built an integration example showcasing [how to integrate Ubble in web app](https://github.com/ubbleai/integration_examples/tree/master/web).
+    At this step, we strongly advise you to use web redirection. We've built an integration example showcasing [how to integrate our product in a web app](https://github.com/ubbleai/integration_examples/tree/master/web).
 
     All the details to use another integration can be found in the [integration section](#section/Integration).
 
@@ -70,6 +70,8 @@ info:
     If the `status` is `declined`, you should refuse it.
 
     If the `status` is `retry-required`, you should request a retry using the [retry endpoint](#tag/Identity-verifications/operation/retry_identity_verification) and redirect the applicant on the new `verification_url` you will get.
+
+    If the `status` is `refused`, you should propose an alternative to the applicant.
 
     For more details see the [identity verification results section](#section/Identity-verification-results).
 
@@ -99,7 +101,7 @@ info:
     ### Integration
     You can redirect the applicant by using web redirection. We support the current versions of all the major browsers.
 
-    We've built an [integration example](https://github.com/ubbleai/integration_examples/tree/master/web) showcasing how to integrate Ubble in a web app [how to integrate Ubble in a web app.](https://github.com/ubbleai/integration_examples/tree/master/web)
+    We've built an [integration example](https://github.com/ubbleai/integration_examples/tree/master/web) showcasing how to integrate our product in a web app.
 
     Web Redirection is compatible with the following browsers / OS. We do not ensure the compatibility of our service with beta versions of browsers / OS.
 
@@ -115,7 +117,7 @@ info:
     |--------------|---------------|--------|--------------------|
     | Min. Version | ≥ 11.0        | ≥ 14.3 | -                  |
 
-    To integrate Ubble in your website, create an identity verification in your backend, pass the URL to your web app and simply add it as a link:
+    To integrate our product in your website, create an identity verification in your backend, pass the URL to your web app and simply add it as a link:
 
     ```html
       <a href="`${verificationUrl}`"></a>
@@ -144,7 +146,7 @@ info:
 
     - [iOS >= 13](https://github.com/ubbleai/integration_examples/tree/master/ios), on **iOS >= 14.3** WebRTC features work perfectly inside the [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview).
 
-    On iOS <= 12, due to limited webview compatibility, Ubble verification process must be completed in Safari App.
+    On iOS <= 12, due to limited webview compatibility, the verification process must be completed in Safari App.
 
     For iOS Native you will have to open Safari using the open method:
     ```swift
@@ -191,7 +193,7 @@ info:
       
       ```html
       <script
-        src="https://cdn.ubble.ai/iframe-sdk-0.0.3.js"
+        src="https://cdn.ubble.ai/iframe-sdk-1.0.0.js"
         type="application/javascript"
       ></script>
       ```
@@ -247,7 +249,7 @@ info:
       }
       ```
 
-      - `onRefused(refusedEvent)`: Event triggered when the user refused to complete the verification
+      - `onRefused(refusedEvent)`: Event triggered when the applicant refused to complete the verification
       
       <div class="center-column"></div>
       
@@ -271,7 +273,7 @@ info:
       }
       ```
       
-      - `onExpired`: Event triggered when the user's verification link has expired
+      - `onExpired`: Event triggered when the verification link has expired
       
       <div class="center-column"></div>
       
@@ -390,7 +392,8 @@ info:
 
     ## Response codes
 
-    You will also get additional information in the webhook body with the `response_codes` attribute. It will include both a numeric code and a string, as detailed in the example below. 
+    When the status is `retry_required`, `declined`, `refused` or `approved`, you will also get additional information in the webhook body with the `response_codes` attribute.
+    It will include both a numeric code and a string, as detailed in the example below
 
     ```json
     "response-codes": [
@@ -407,6 +410,8 @@ info:
         <p>You should then build you business rules on status and use response codes as additional information, rather than use response codes as required information.</p>
       </div>
     </div>
+
+    ## List of response codes
 
     <style type="text/css">
     .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0}
@@ -513,6 +518,16 @@ info:
         <td class="tg-0pky">Applicant’s device did not have any camera</td>
       </tr>
       <tr>
+        <td class="tg-0pky">61204</td>
+        <td class="tg-0pky">focus_lost</td>
+        <td class="tg-0pky">Applicant switched tabs/application while performing the id verification</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">61205</td>
+        <td class="tg-0pky">sms_not_received</td>
+        <td class="tg-0pky">Applicant did not receive the SMS</td>
+      </tr>
+      <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Document capture issue</span></td>
       </tr>
       <tr>
@@ -527,7 +542,7 @@ info:
       </tr>
       <tr>
         <td class="tg-0pky">61310</td>
-        <td class="tg-0pky">manipulation_face_blurry</td>
+        <td class="tg-0pky">document_front_not_captured</td>
         <td class="tg-0pky">Applicant has not captured the front of the document</td>
       </tr>
       <tr>
@@ -544,11 +559,6 @@ info:
         <td class="tg-0pky">61313</td>
         <td class="tg-0pky">document_not_tilted</td>
         <td class="tg-0pky">Applicant did not present a dynamic view of the document</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">61314</td>
-        <td class="tg-0pky">document_instructions_not_followed</td>
-        <td class="tg-0pky">Applicant did not follow the instructions when submitting their document</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Face capture issue</span></td>
@@ -577,11 +587,6 @@ info:
         <td class="tg-0pky">61412</td>
         <td class="tg-0pky">face_not_turned</td>
         <td class="tg-0pky">Applicant did not move to prove the liveness</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">61413</td>
-        <td class="tg-0pky">face_challenge_timeout</td>
-        <td class="tg-0pky">Applicant did not follow the instructions when submitting their face</td>
       </tr>
       <tr>
         <td class="tg-0pky">61414</td>
@@ -748,14 +753,14 @@ info:
     
     The endpoint will mainly include the following information.
 
-    | Attribute     | Description                                                                                                    |
-    |---------------|----------------------------------------------------------------------------------------------------------------|
-    | status        | Indicates the position in the lifecycle as well as the action to be taken                                      |
-    | response_codes| Indicates the cause when the status is refused, declined or retry_required                                     |
-    | identity      | Includes all information about the identity of the `applicant`                                                 |
-    | document      | Includes all information that has been extracted from the document, as well as the best images of the document |
-    | face          | Includes the best image of the face                                                                            |
-    | pdf           | Includes all information in a pdf format                                                                       |
+    | Attribute              | Description                                                                                                    |
+    |------------------------|----------------------------------------------------------------------------------------------------------------|
+    | status                 | Indicates the position in the lifecycle as well as the action to be taken                                      |
+    | response_codes         | Indicates the cause when the status is refused, declined or retry_required                                     |
+    | verified_identity      | Includes all information about the identity of the `applicant` when the verification is `applicant`            |
+    | document               | Includes all information that has been extracted from the document, as well as the best images of the document |
+    | face                   | Includes the best image of the face                                                                            |
+    | pdf_report             | Includes all information in a pdf format                                                                       |
 
     Please note that the information we extract from the document can be configured with your account manager.
 
@@ -839,13 +844,14 @@ info:
     ## Body 
     The webhook body contains the following information: 
 
-    | Attribute                | Description                                   |
-    |--------------------------|-----------------------------------------------|
-    | applicant_id             | ID of the applicant, useful to recognize them |
-    | user_journey_id          | ID of the user journey                        |
-    | identity_verification_id | ID of the identity verification               |
-    | status                   | status of the identity verification           |
-    | response_codes           | list of response codes                        |
+    | Attribute                | Description                                                                             |
+    |--------------------------|-----------------------------------------------------------------------------------------|
+    | applicant_id             | ID of the applicant, useful to recognize them                                           |
+    | external_applicant_id    | Your applicant ID, only if you updated it in the applicant object                       |
+    | user_journey_id          | ID of the user journey                                                                  |
+    | identity_verification_id | ID of the identity verification                                                         |
+    | status                   | status of the identity verification                                                     |
+    | response_codes           | list of response codes                                                                  |
 
     ### Example
     ```json
@@ -945,7 +951,7 @@ info:
     | date-time    | - Apply ISO8601<br /> - Always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
     | phone number | - Country code with '+' sign (+33 for example) <br /> - Number with potential spaces, hyphens or trailing zero(s)  | {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> }  |
 
-  version: 2.0.0
+  version: 2.0.0-beta
 
 servers:
   - url: https://api.ubble.ai/v2/
@@ -996,7 +1002,7 @@ paths:
                   - $ref: "#/components/schemas/IdentityVerificationCreate"
       callbacks:
         statusChanged:
-          "WIP - {$request.body#/webhook_url}":
+          "{$request.body#/webhook_url}":
             post:
               requestBody:
                 required: true
@@ -1030,7 +1036,7 @@ paths:
                           },
                       }
                     schema:
-                      $ref: "#/components/schemas/WipEvent"
+                      $ref: "#/components/schemas/Event"
               responses:
                 "200":
                   description: Your server returns this code if it accepts the callback.
@@ -1383,11 +1389,11 @@ components:
             birth_date: 1934-10-02
             document_type: ID
             document_issuing_country: US
-            front_image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
+            front_image_signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
         face:
-          image_signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+          image_signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
         pdf:
-          signed_url: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+          signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
         phone_number:
           country_code: "+1"
           number: "2068133616"
@@ -1684,7 +1690,7 @@ components:
           type: string
           format: uri
 
-    WipEvent:
+    Event:
       type: object
       required: [specversion, type, subject, id, time, datacontenttype, data]
       properties:
@@ -1952,7 +1958,7 @@ components:
       type: string
       format: uri
       description: Pre-signed URL
-      example: https://storage-b.staging.env.ubble.ai/staging-env-ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
+      example: https://storage-b.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
 
     DatedObject:
       type: object

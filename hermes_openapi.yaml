@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: Hermes - the identity verification API
+  title: Checkout.com - Identity Verification
   x-logo:
     url: "https://raw.githubusercontent.com/kenji-ubble/kenji-ubble/main/CKO_logo.png"
   description: |
@@ -757,8 +757,8 @@ info:
     |------------------------|----------------------------------------------------------------------------------------------------------------|
     | status                 | Indicates the position in the lifecycle as well as the action to be taken                                      |
     | response_codes         | Indicates the cause when the status is refused, declined or retry_required                                     |
-    | verified_identity      | Includes all information about the identity of the `applicant` when the verification is `applicant`            |
-    | document               | Includes all information that has been extracted from the document, as well as the best images of the document |
+    | verified_identity      | Includes all information about the identity of the `applicant` when the verification is `approved`            |
+    | documents              | Includes all information that has been extracted from the document, as well as the best images of the document |
     | face                   | Includes the best image of the face                                                                            |
     | pdf_report             | Includes all information in a pdf format                                                                       |
 
@@ -951,7 +951,7 @@ info:
     | date-time    | - Apply ISO8601<br /> - Always UTC time                                                                                                             | 2017-07-21T17:32:28Z                                                        |
     | phone number | - Country code with '+' sign (+33 for example) <br /> - Number with potential spaces, hyphens or trailing zero(s)  | {<br />    "country_code": "+44",<br />    "number": "1234 567890"<br /> }  |
 
-  version: 2.0.0-beta
+  version: 2.0.0
 
 servers:
   - url: https://api.ubble.ai/v2/

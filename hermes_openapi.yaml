@@ -22,8 +22,6 @@ info:
 
     Open the dashboard [dashboard](https://dashboard.ubble.ai) and navigate to the "security" tab to create your credentials and your certificate. If you need an account, please contact support@ubble.ai.
 
-    Make sure you have an account with us. Once you've signed in, navigate on your dashboard to `Security > Credentials` and create your credentials and certificates.
-
     Your credentials and certificates carry many privileges, so be sure to keep them secure. Do not share your secret API keys or API certificates in publicly accessible areas such as GitHub, client-side code, and so forth.
 
     ### Prepare a webhook and a redirect URL
@@ -374,6 +372,7 @@ info:
     | `retry_requested`                    | You requested a retry for this identity verification                                                                              |
     | `anonymization`                      | The verification has been anonymized and was in the status `retry_required`, retry is no longer available                         |
     | `audit_completion`                   | The verification has been audited and the status may have been updated                                                            |
+    | `report_created`                     | The pdf report is available                                                                                                      |
 
     ## Status
 
@@ -387,7 +386,7 @@ info:
     | `approved`                           | All checks are valid, <br>you should accept to the applicant request.                                                                                         |
     | `declined`                           | An irregularity has been detected when performing checks,<br>You should refuse the applicant request. <br>If needed you request a new identity verification.  |
     | `retry_required`                     | We could not perform all the checks,<br>you should request a retry for this identity verification.                                                            |
-    | `unconclusive`                        | The checks have not been completed but retry is not longer available                                                                                          |
+    | `inconclusive`                       | The checks have not been completed but retry is not longer available                                                                                          |
     | `refused`                            | The applicant refused to perform the verification, <br>you should propose an alternative.                                                                     |
 
     ## Response codes
@@ -397,8 +396,8 @@ info:
 
     ```json
     "response-codes": [
-      {"response_code": 61310, "response_summary": "document_front_not_captured"},
-      {"response_code": 62102, "response_summary": "document_not_accepted"},
+      {"code": 61310, "summary": "document_front_not_captured"},
+      {"code": 62102, "summary": "document_not_accepted"},
     ]
     ```
     You will find below the exhaustive list of these codes. 
@@ -437,8 +436,8 @@ info:
     </colgroup>
     <thead>
       <tr>
-        <th class="tg-fymr"><nobr><code>response_code</code></nobr></th>
-        <th class="tg-fymr"><code>response_summary</code></th>
+        <th class="tg-fymr"><nobr><code>summary</code></nobr></th>
+        <th class="tg-fymr"><code>summary</code></th>
         <th class="tg-fymr">Description</th>
       </tr>
     </thead>
@@ -460,8 +459,8 @@ info:
     </colgroup>
     <thead>
       <tr>
-        <th class="tg-fymr"><nobr><code>response_code</code></nobr></th>
-        <th class="tg-fymr"><code>response_summary</code></th>
+        <th class="tg-fymr"><nobr><code>summary</code></nobr></th>
+        <th class="tg-fymr"><code>summary</code></th>
         <th class="tg-fymr">Description</th>
       </tr>
     </thead>
@@ -613,8 +612,8 @@ info:
     </colgroup>
     <thead>
       <tr>
-        <th class="tg-fymr"><nobr><code>response_code</code></nobr></th>
-        <th class="tg-fymr"><code>response_summary</code></th>
+        <th class="tg-fymr"><nobr><code>summary</code></nobr></th>
+        <th class="tg-fymr"><code>summary</code></th>
         <th class="tg-fymr">Description</th>
       </tr>
     </thead>
@@ -717,8 +716,8 @@ info:
     </colgroup>
     <thead>
       <tr>
-        <th class="tg-fymr"><nobr><code>response_code</code></nobr></th>
-        <th class="tg-fymr"><code>response_summary</code></th>
+        <th class="tg-fymr"><nobr><code>summary</code></nobr></th>
+        <th class="tg-fymr"><code>summary</code></th>
         <th class="tg-fymr">Description</th>
       </tr>
     </thead>
@@ -764,7 +763,14 @@ info:
 
     Please note that the information we extract from the document can be configured with your account manager.
 
-    ### API response signing
+    ## PDF report
+    
+    For approved or declined checks, you can also retrieve detailed results in pdf format.
+    In order not to penalize the response time of our products, we have decoupled the API response and the pdf generation.
+    You'll therefore receive a report_created event a few seconds after the check_completion event, telling you that the pdf report is ready. 
+    Use the dedicated endpoint to retrieve it.
+
+    ## API response signing
 
     The API response signature can be activated by your account manager.
     
@@ -868,8 +874,8 @@ info:
               "identity_verification_id": "idv_5hxpdwegjcbujpth3wdo55d3vm",
               "status": "declined",
               "response_codes": [
-                  {"response_code": 61310, "response_summary": "document_front_not_captured"},
-                  {"response_code": 62102, "response_summary": "document_not_accepted"}
+                  {"code": 61310, "summary": "document_front_not_captured"},
+                  {"code": 62102, "summary": "document_not_accepted"}
               ]
           }
       }
@@ -1025,12 +1031,12 @@ paths:
                             "response_codes":
                               [
                                 {
-                                  "response_code": 61310,
-                                  "response_summary": "document_front_not_captured",
+                                  "code": 61310,
+                                  "summary": "document_front_not_captured",
                                 },
                                 {
-                                  "response_code": 62102,
-                                  "response_summary": "document_not_accepted",
+                                  "code": 62102,
+                                  "summary": "document_not_accepted",
                                 },
                               ],
                           },
@@ -1155,6 +1161,39 @@ paths:
           description: Bad request. The identity verification cannot be anonymized.
         "500":
           description: Internal server error
+      
+  /identity-verifications/{identity_verification_id}/pdf-report:
+    get:
+      tags:
+        - Identity verifications
+      summary: Retrieve PDF report of an identity verification
+      description: |
+        This endpoint allows you to retrieve a PDF report containing all the information of the identity verification.
+        Please note that this report is only available for verifications in statuses `declined` and `approved` once you receive the `report_created` event.
+        
+
+      operationId: pdf_identity_verification
+      parameters:
+        - name: identity_verification_id
+          in: path
+          description: ID of the identity verification
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Operation success
+          content:
+            application/json:
+              examples:
+                identity_verification_creation_response_body:
+                  $ref: "#/components/examples/identity_verification_pdf_response_body"
+              schema:
+                required: [pdf_report]
+                allOf:
+                  - $ref: "#/components/schemas/IdentityVerificationPdf"
+        "404":
+          description: The PDF is not available
 
   /identity-verifications/{identity_verification_id}/notify:
     post:
@@ -1372,8 +1411,8 @@ components:
         applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         status: declined
         response_codes:
-          - { "response_code": 61310, "response_summary": "document_front_not_captured" }
-          - { "response_code": 62102, "response_summary": "document_not_accepted" }
+          - { "code": 61310, "summary": "document_front_not_captured" }
+          - { "code": 62102, "summary": "document_not_accepted" }
         verified_identity:
           full_name: David Vincent
           birth_date: 1934-10-02
@@ -1425,7 +1464,11 @@ components:
             href: "https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we"
           verification_url:
             href: "https://id.ubble.ai/4hryu5cei5/"
-          
+
+    identity_verification_pdf_response_body:
+      value:
+        pdf_report: www.pdf.com
+            
     applicant_creation_request_body:
       value:
         external_applicant_id: ext_osdfdfdb4hryu5cei5vwoabrk5k
@@ -1565,6 +1608,13 @@ components:
         - $ref: "#/components/schemas/SelfLink"
         - $ref: "#/components/schemas/ApplicantLink"
         - $ref: "#/components/schemas/ActiveLink"
+
+    IdentityVerificationPdf:
+        type: object
+        properties:
+          pdf_report:
+            type: string
+            format: uri
 
     DeclaredData:
       type: object
@@ -1722,8 +1772,8 @@ components:
               "status": "declined",
               "response_codes":
                 [
-                  { "response_code": 61310, "response_summary": "document_front_not_captured" },
-                  { "response_code": 62102, "response_summary": "document_not_accepted" },
+                  { "code": 61310, "summary": "document_front_not_captured" },
+                  { "code": 62102, "summary": "document_not_accepted" },
                 ],
             }
     ApplicantLink:

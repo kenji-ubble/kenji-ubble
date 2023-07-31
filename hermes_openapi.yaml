@@ -387,7 +387,7 @@ info:
     | `approved`                           | All checks are valid, <br>you should accept to the applicant request.                                                                                         |
     | `declined`                           | An irregularity has been detected when performing checks,<br>You should refuse the applicant request. <br>If needed you request a new identity verification.  |
     | `retry_required`                     | We could not perform all the checks,<br>you should request a retry for this identity verification.                                                            |
-    | `uncompleted`                        | The checks have not been completed but retry is not longer available                                                                                          |
+    | `unconclusive`                        | The checks have not been completed but retry is not longer available                                                                                          |
     | `refused`                            | The applicant refused to perform the verification, <br>you should propose an alternative.                                                                     |
 
     ## Response codes
@@ -1327,8 +1327,7 @@ components:
     identity_verification_creation_request_body_min:
       value:
         declared_data:
-          first_name: David
-          last_name: Vincent
+          name: David Vincent
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
 
@@ -1336,8 +1335,7 @@ components:
       value:
         applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
-          first_name: David
-          last_name: Vincent
+          name: David Vincent
         webhook_url: https://my.api/events/
         redirect_url: https://myweb.site?query-param=hello
 
@@ -1346,8 +1344,7 @@ components:
         user_journey_id: usj_tkoi5db4hryu5cei5vwoabr7we
         applicant_id: apl_tkoi5db4hryu5cei5vwoabr7we
         declared_data:
-          first_name: David
-          last_name: Vincent
+          name: David Vincent
           birth_date: 1934-10-02
         phone_number:
           country_code: "+1"
@@ -1381,8 +1378,7 @@ components:
           full_name: David Vincent
           birth_date: 1934-10-02
         declared_data:
-          first_name: David
-          last_name: Vincent
+          name: David Vincent
           birth_date: 1934-10-02
         documents:
           - full_name: David Vincent
@@ -1417,8 +1413,7 @@ components:
         status: pending
         response_codes: []
         declared_data:
-          first_name: David
-          last_name: Vincent
+          name: David Vincent
           birth_date: 1934-10-02
         documents: []
         webhook_url: https://my.api/events/
@@ -1573,14 +1568,11 @@ components:
 
     DeclaredData:
       type: object
-      required: [first_name, last_name]
+      required: [name]
       properties:
-        first_name:
+        name:
           type: string
-          maxLength: 100
-        last_name:
-          type: string
-          maxLength: 100
+          maxLength: 255
         birth_date:
           type: string
           format: date

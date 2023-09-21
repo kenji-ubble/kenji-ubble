@@ -766,8 +766,10 @@ info:
     ## PDF report
     
     For approved or declined checks, you can also retrieve detailed results in pdf format.
+    
     In order not to penalize the response time of our products, we have decoupled the API response and the pdf generation.
-    You'll therefore receive a report_created event a few seconds after the check_completion event, telling you that the pdf report is ready. 
+    
+    You'll therefore receive a `report_created` event a few seconds after the `check_completion` event, telling you that the pdf report is ready. 
     Use the dedicated endpoint to retrieve it.
 
     ## API response signing
@@ -974,7 +976,7 @@ x-tagGroups:
       - Identity verifications
       - Applicants
 paths:
-  /identity-verifications:
+  /v2/identity-verifications:
     post:
       tags:
         - Identity verifications
@@ -1049,7 +1051,7 @@ paths:
                 "201":
                   description: Your server returns this code if it accepts the callback.
 
-  /identity-verifications/{identity_verification_id}/retry:
+  /v2/identity-verifications/{identity_verification_id}/retry:
     post:
       tags:
         - Identity verifications
@@ -1096,7 +1098,7 @@ paths:
         "500":
           description: An error occurred while retrying the verification
 
-  /identity-verifications/{identity_verification_id}:
+  /v2/identity-verifications/{identity_verification_id}:
     get:
       tags:
         - Identity verifications
@@ -1123,7 +1125,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/IdentityVerification"
 
-  /identity-verifications/{identity_verification_id}/anonymize:
+  /v2/identity-verifications/{identity_verification_id}/anonymize:
     post:
       tags:
         - Identity verifications
@@ -1138,7 +1140,7 @@ paths:
           schema:
             type: string
       responses:
-        "202":
+        "200":
           description: Identity verification anonymization requested
           content:
             application/json:
@@ -1148,13 +1150,9 @@ paths:
                   self:
                     href: https://api.ubble.ai/v2/applicants/apl_tkoi5db4hryu5cei5vwoabr7we
               schema:
-                type: object
-                required: [id, _links]
-                properties:
-                  id:
-                    $ref: "#/components/schemas/IdentityVerificationId"
-                  _links:
-                    $ref: "#/components/schemas/SelfLink"
+                required: [applicant_id, user_journey_id]
+                allOf:
+                  - $ref: "#/components/schemas/IdentityVerification"
         "404":
           description: Identity verification not found
         "400":
@@ -1162,13 +1160,14 @@ paths:
         "500":
           description: Internal server error
       
-  /identity-verifications/{identity_verification_id}/pdf-report:
+  /v2/identity-verifications/{identity_verification_id}/pdf-report:
     get:
       tags:
         - Identity verifications
       summary: Retrieve PDF report of an identity verification
       description: |
         This endpoint allows you to retrieve a PDF report containing all the information of the identity verification.
+
         Please note that this report is only available for verifications in statuses `declined` and `approved` once you receive the `report_created` event.
         
 
@@ -1195,7 +1194,7 @@ paths:
         "404":
           description: The PDF is not available
 
-  /identity-verifications/{identity_verification_id}/notify:
+  /v2/identity-verifications/{identity_verification_id}/notify:
     post:
       tags:
         - Identity verifications
@@ -1222,7 +1221,7 @@ paths:
         "204":
           description: Notification succesfully requested
 
-  /applicants:
+  /v2/applicants:
     post:
       tags:
         - Applicants
@@ -1265,7 +1264,7 @@ paths:
                       "error_codes": ["phone_number__invalid_format"],
                     }
 
-  /applicants/{applicant_id}:
+  /v2/applicants/{applicant_id}:
     get:
       tags:
         - Applicants
@@ -1330,7 +1329,7 @@ paths:
         "500":
           description: Internal server error
 
-  /applicants/{applicant_id}/anonymize:
+  /v2/applicants/{applicant_id}/anonymize:
     post:
       tags:
         - Applicants
@@ -1427,8 +1426,6 @@ components:
             front_image_signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/tight_crops/FRA-I5-Front-bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921906596.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163228Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87d8467ab92cbad7c00171af28e613d495f3ff441ce0ea59dd013d68abc50555
         face:
           image_signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
-        pdf:
-          signed_url: https://storage-b.env.ubble.ai/ubble-ai/NDYOOVHGZPAQ/a54b3393-f02a-47c9-a9c5-2f6ee73560e1/bb603e2f-5de9-40f2-9631-8285a33c24c0/live_face/bb603e2f-5de9-40f2-9631-8285a33c24c0-1679921946714.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=V9jgOdpOdeVSFTkA4ZsG%2F20230327%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230327T163223Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2b7d87fec4f11f0df949da7beade2519cf1a51ce70fe9cc1cf0470d73f5340e4
         phone_number:
           country_code: "+1"
           number: "2068133616"
@@ -1508,7 +1505,9 @@ components:
       required: [id]
       properties:
         id:
-          $ref: "#/components/schemas/IdentityVerificationId"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/IdentityVerificationId"
       allOf:
         - $ref: "#/components/schemas/DatedObject"
         - $ref: "#/components/schemas/IdentityVerificationBase"
@@ -1536,7 +1535,9 @@ components:
           allOf:
             - $ref: "#/components/schemas/ApplicantId"
         status:
-          $ref: "#/components/schemas/VerificationStatuses"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/VerificationStatuses"
         response_codes:
           type: array
           readOnly: true
@@ -1544,7 +1545,9 @@ components:
           items:
             $ref: "#/components/schemas/ResponseCodes"
         verified_identity:
-          $ref: "#/components/schemas/Identity"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/Identity"
         declared_data:
           $ref: "#/components/schemas/DeclaredData"
         documents:
@@ -1555,9 +1558,9 @@ components:
           items:
             $ref: "#/components/schemas/Document"
         face:
-          $ref: "#/components/schemas/Face"
-        pdf:
-          $ref: "#/components/schemas/Pdf"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/Face"
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
         webhook_url:
@@ -1567,7 +1570,9 @@ components:
           type: string
           format: uri
         _links:
-          $ref: "#/components/schemas/IdentityVerificationLinks"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/IdentityVerificationLinks"
 
     IdentityVerificationCreateBase:
       type: object
@@ -1591,6 +1596,19 @@ components:
           readOnly: true
           items:
             $ref: "#/components/schemas/Document"
+        face:
+          allOf:
+            - $ref: '#/components/schemas/VerificationFace'
+          readOnly: true
+        response_codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResponseCodes'
+          readOnly: true
+        verified_identity:
+          allOf:
+            - $ref: '#/components/schemas/VerificationIdentity'
+          readOnly: true
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
         webhook_url:
@@ -1721,7 +1739,6 @@ components:
 
     IdentityVerificationRetryRequest:
       type: object
-      required: [webhook_url, redirect_url]
       properties:
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
@@ -1800,11 +1817,12 @@ components:
 
     Applicant:
       required: [id]
+      properties:
+        id:
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/ApplicantId"
       allOf:
-        - type: object
-          properties:
-            id:
-              $ref: "#/components/schemas/ApplicantId"
         - $ref: "#/components/schemas/DatedObject"
         - $ref: "#/components/schemas/BaseApplicant"
         - $ref: "#/components/schemas/ApplicantsLinks"
@@ -1819,15 +1837,15 @@ components:
           type: string
           format: email
           example: david.vincent@courriel.ml
-        verified_identity:
-          $ref: "#/components/schemas/Identity"
 
     ApplicantsLinks:
       type: object
       required: [_links]
       properties:
         _links:
-          $ref: "#/components/schemas/SelfLink"
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/SelfLink"
 
     Attempt:
       type: object
@@ -2018,3 +2036,76 @@ components:
           format: date-time
           example: 2017-07-21T17:40:32Z
           readOnly: true
+
+    VerificationFace:
+      type: object
+      properties:
+        image_signed_url:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+        - image_signed_url
+
+    VerificationIdentity:
+      type: object
+      description: IdentitySerializer for our main Identity model
+      properties:
+        first_names:
+          type: string
+          nullable: true
+          readOnly: true
+        full_name:
+          type: string
+          nullable: true
+          readOnly: true
+        last_name:
+          type: string
+          nullable: true
+          readOnly: true
+        last_name_at_birth:
+          type: string
+          nullable: true
+          readOnly: true
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        birth_place:
+          type: string
+          nullable: true
+          maxLength: 255
+        nationality:
+          type: string
+          readOnly: true
+        gender:
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/GenderA47Enum'
+            - $ref: '#/components/schemas/BlankEnum'
+            - $ref: '#/components/schemas/NullEnum'
+      required:
+        - first_names
+        - full_name
+        - last_name
+        - last_name_at_birth
+        - nationality
+
+    GenderA47Enum:
+      enum:
+        - M
+        - F
+        - NA
+      type: string
+      description: |-
+        * `M` - M
+        * `F` - F
+        * `NA` - NA
+
+    BlankEnum:
+      enum:
+        - ''
+
+    NullEnum:
+      enum:
+        - null

@@ -490,13 +490,8 @@ info:
       </tr>
       <tr>
         <td class="tg-0pky">61121</td>
-        <td class="tg-0pky">drop_before_capture</td>
+        <td class="tg-0pky">applicant_drop</td>
         <td class="tg-0pky">Applicant left the process before the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
-      </tr>
-      <tr>
-        <td class="tg-0pky">61131</td>
-        <td class="tg-0pky">drop_during_capture</td>
-        <td class="tg-0pky">Applicant left the process during the capture phase and the verification URL expired (by default the expiration time is 15 minutes)</td>
       </tr>
       <tr>
         <td class="tg-fymr" colspan="3"><span style="font-weight:bold">Technical issue</span></td>

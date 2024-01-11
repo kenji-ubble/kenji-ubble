@@ -13,7 +13,7 @@ info:
 
     The following represents a typical identity verification flow:
 
-     <img src="https://raw.githubusercontent.com/ubbleai/docs/main/intro_diagram.png" alt="intro_diagram" width="900" height="auto">
+     <img src="https://raw.githubusercontent.com/ubbleai/docs/main/intro_diagram.png" alt="intro_diagram" width="800" height="auto">
 
     1. **You request an identity verification.** You'll receive a unique URL that you need to redirect the user to.
     2. **You redirect the user.** You have full control over how to [manage the verification redirection](#section/Manage-verification-redirection) to ensure a smooth user experience.

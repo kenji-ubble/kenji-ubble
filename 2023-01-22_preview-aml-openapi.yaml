@@ -1958,31 +1958,6 @@ paths:
         "500":
           description: Internal server error
 
-  /v2/aml-verifications/{aml_verification_id}/details:
-    get:
-      tags:
-        - AML verifications
-      summary: Retrieve AML verification detailed results
-      description: This endpoint allows you to get the detailed results of an AML verification.
-      operationId: retrieve_aml_verification_details
-      parameters:
-        - name: aml_verification_id
-          required: true
-          in: path
-          description: ID of the AML verification
-          schema:
-            $ref: "#/components/schemas/AMLVerificationId"
-      responses:
-        "301":
-          description: Moved Permanently
-          headers:
-            Location:
-              description: The location of the detailed results
-              schema:
-                type: string
-                format: uri
-          x-redirect:
-            new_location: "{comply_hostname}/searches/{search_id}/details"
   /v2/aml-verifications/{aml_verification_id}/anonymize:
     post:
       tags:
@@ -2890,20 +2865,15 @@ components:
     AMLVerificationBase:
       type: object
       required:
-        [declared_data, status, webhook_url, _links]
+        [search_terms, status, webhook_url, _links]
       allOf:
         - properties:
             status:
               readOnly: true
               allOf:
                 - $ref: "#/components/schemas/AMLVerificationStatuses"
-            declared_data:
-              type: object
-              required: [name]
-              properties:
-                name:
-                  type: string
-                  maxLength: 255
+            search_terms:
+              $ref: "#/components/schemas/SearchTerms"
             webhook_url:
               type: string
               format: uri
@@ -2911,7 +2881,8 @@ components:
               readOnly: false
               allOf:
                 - $ref: "#/components/schemas/ApplicantId"
-        - $ref: "#/components/schemas/ComplyAdvantageSearchInputs"
+            search_parameters:
+              $ref: "#/components/schemas/SearchParameters"
         - properties:
             monitored:
               type: boolean
@@ -2933,11 +2904,21 @@ components:
       readOnly: true
       enum:
         - created
-        - in_progress
-        - possible_match
+        - started
         - no_match
+        - potential_match
+        - confirmed_match
 
-    ComplyAdvantageSearchInputs:
+    SearchTerms:
+      type: object
+      description: Terms to be searched related to the applicant.
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+
+    SearchParameters:
       type: object
       description: ComplyAdvantage search inputs
       properties:

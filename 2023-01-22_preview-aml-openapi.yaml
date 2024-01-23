@@ -2128,23 +2128,24 @@ components:
 
     aml_verification_creation_request_body_min:
       value:
-        declared_data:
+        search_terms:
           name: David Vincent
         webhook_url: https://my.api/events/
 
     aml_verification_creation_request_body_max:
       value:
-        declared_data:
+        search_terms:
           name: David Vincent
         webhook_url: https://my.api/events/
         applicant_id: aplt_tkoi5db4hryu5cei5vwoabr7we
-        search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
-        fuzziness: 0.4
+        search_params:
+          search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
+          fuzziness: 0.4
         monitored: false
 
     aml_verification_creation_request_body_min_plus_aplt:
       value:
-        declared_data:
+        search_terms:
           name: David Vincent
         webhook_url: https://my.api/events/
         applicant_id: aplt_tkoi5db4hryu5cei5vwoabr7we
@@ -2159,12 +2160,13 @@ components:
         created_on: 2017-07-21T17:32:28Z
         modified_on: 2017-07-21T17:40:32Z
         status: created
-        declared_data:
+        search_terms:
           name: David Vincent
         webhook_url: https://my.api/events/
         applicant_id: aplt_tkoi5db4hryu5cei5vwoabr7we
-        search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
-        fuzziness: 0.4
+        search_params:
+          search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
+          fuzziness: 0.4
         monitored: false
         _links:
           self:
@@ -2865,7 +2867,7 @@ components:
     AMLVerificationBase:
       type: object
       required:
-        [search_terms, status, webhook_url, _links]
+        [status, search_terms, webhook_url, _links]
       allOf:
         - properties:
             status:
@@ -2894,7 +2896,7 @@ components:
     AMLVerificationCreateBase:
       type: object
       required:
-        [declared_data, status, webhook_url, redirect_url, _links]
+        [status, search_terms, webhook_url, _links]
       allOf:
         - $ref: "#/components/schemas/AMLVerificationBase"
 

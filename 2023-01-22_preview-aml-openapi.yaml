@@ -2138,7 +2138,7 @@ components:
           name: David Vincent
         webhook_url: https://my.api/events/
         applicant_id: aplt_tkoi5db4hryu5cei5vwoabr7we
-        search_params:
+        search_parameters:
           search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
           fuzziness: 0.4
         monitored: false
@@ -2164,7 +2164,7 @@ components:
           name: David Vincent
         webhook_url: https://my.api/events/
         applicant_id: aplt_tkoi5db4hryu5cei5vwoabr7we
-        search_params:
+        search_parameters:
           search_profile_id: 8eb79430-c014-41e5-be73-2c2c091322b8
           fuzziness: 0.4
         monitored: false

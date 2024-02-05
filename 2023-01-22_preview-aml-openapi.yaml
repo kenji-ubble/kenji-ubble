@@ -2922,7 +2922,7 @@ components:
 
     SearchParameters:
       type: object
-      description: ComplyAdvantage search inputs
+      description: Search parameters.
       properties:
         search_profile_id:
           type: string

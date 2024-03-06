@@ -1387,7 +1387,7 @@ info:
     ## Signature
     For security reasons all our webhook calls are signed.
 
-    `Ubble-Signature` header contains the timestamp of the signature plus the signature itself. This allow you to ensure the content of the webhook was not modified.
+    `Cko-Signature` header contains the timestamp of the signature plus the signature itself. This allow you to ensure the content of the webhook was not modified.
 
     The timestamp is prefixed by `ts=`, and the signature is prefixed by `v1=`. Example: `ts=1492774577,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd`
 
@@ -2922,7 +2922,7 @@ components:
 
     SearchParameters:
       type: object
-      description: Search parameters.
+      description: ComplyAdvantage search inputs
       properties:
         search_profile_id:
           type: string

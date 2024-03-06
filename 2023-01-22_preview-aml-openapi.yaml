@@ -9,7 +9,7 @@ info:
     [Checkout.com](https://www.checkout.com/)'s Identity Verification solution enables you to verify your users' identities
     to meet compliance requirements and reduce the risk of fraud.
     
-    To integrate Identity Verification and configure your account, reach out to your Account Manager or support@ubble.ai.
+    To integrate Identity Verification and configure your account, reach out to your Account Manager or support.idv@checkout.com.
 
     The following represents a typical identity verification flow:
 
@@ -38,7 +38,7 @@ info:
 
     ## Before you begin
     - Make sure you have a [test account](https://dashboard.ubble.ai/) and credentials. Open the [dashboard](https://dashboard.ubble.ai/)
-    and navigate to the "API credentials" tab to create your credentials and your certificate. If you need an account, please contact support@ubble.ai.
+    and navigate to the "API credentials" tab to create your credentials and your certificate. If you need an account, please contact support.idv@checkout.com.
     - We use both mutual Transport Layer Security and basic authentication. You must then authenticate your calls by including your basic
     authentication credentials (`client_id` and `client_secret`) and your mTLS certificate in API calls.
     - To receive notifications for the various identity verification events triggered throughout the steps, you will need to define a
@@ -214,7 +214,7 @@ info:
 
     ## Customize the verification user experience
 
-    Contact your Account Manager or support@ubble.ai to customize the verification user experience.
+    Contact your Account Manager or support.idv@checkout.com to customize the verification user experience.
 
     You can <a href="https://www.ubble.ai/customise-your-ubble-experience/" target="_blank">customize</a> the following elements on the verification screen displayed to your users:
     - logo
@@ -920,12 +920,19 @@ info:
         <td class="tg-center">&#9989;</td>
       </tr>
       <tr>
-        <td class="tg-fymr" colspan="5"><span style="font-weight:bold">Internal error</span></td>
+        <td class="tg-fymr" colspan="5"><span style="font-weight:bold">Other issues</span></td>
       </tr>
       <tr>
         <td class="tg-0pky">61901</td>
         <td class="tg-0pky">internal_error</td>
         <td class="tg-0pky">An internal error prevents us from completing the verification, we do our best to reduce the occurrence of this case</td>
+        <td class="tg-center">&#9989;</td>
+        <td class="tg-center">&#9989;</td>
+      </tr>
+      <tr>
+        <td class="tg-0pky">61911</td>
+        <td class="tg-0pky">corrupted_videos</td>
+        <td class="tg-0pky">The received videos cannot be played</td>
         <td class="tg-center">&#9989;</td>
         <td class="tg-center">&#9989;</td>
       </tr>
@@ -1177,7 +1184,7 @@ info:
     |`documents`|Includes all information that has been extracted from the document, as well as the best images of the document.|
     |`face`|Includes the best image of the face.|
 
-    To configure the information extracted from the document, reach out to your Account Manager or support@ubble.ai.
+    To configure the information extracted from the document, reach out to your Account Manager or support.idv@checkout.com.
 
     For more details, see [retrieve identity-verification documentation](#tag/Identity-verifications/operation/retrieve_identity_verification).
 
@@ -1189,7 +1196,7 @@ info:
 
     <div style="padding: 1em; background-color: #fafafa; display: flex; align-items: center; border-radius: 0.5rem;">
       <span type="post" class="sc-EgOXT hniGzf http-verb post">post</span>
-      <span class="sc-ejfMa-d jgeKJH">/v2/identity-verifications/{identity_verification_id}/notify</span>
+      <span class="sc-ejfMa-d jgeKJH">/v2/identity-verifications/{identity_verification_id}/retry</span>
     </div>
 
     Request example
@@ -1300,6 +1307,227 @@ info:
     You can configure data retention together with your account manager, in accordance with your purpose for using the data. At the end of this time, the identity verifications are anonymized, which means all personal or sensitive data are deleted. The default storage time is 90 days.
   
     If needed, you can also request the anonymization of an identity verification through the [anonymization endpoint](#tag/Identity-verifications/operation/anonymize_identity_verification). 
+    
+    # AML Verification
+    
+    In partnership with ComplyAdvantage we propose AML verification for individuals. It can include Politically Exposed Person (PEP) lists, Sanction lists and Adverse media check. You can also monitor a search as well as access the ComplyAdvantage case management tool to manage your activity. 
+    
+    ## Request a verification
+    
+    To request an AML verification, you must include the following fields:
+
+    - `search_terms.name` - the full name of the applicant you want to screen.
+  
+    - `applicant_id` - the unique identifier of the applicant, if there is none yet we create a new one.
+  
+    - `webhook_url` - the URL you want to be notified on when the status of the AML verification change.
+
+    You can also define the following fields within the search_parameters object:
+
+    - `search_profile_id` - the Profile ID of a search profile that can be retrieved from the comply advantage user interface.
+  
+    - `fuzziness` - determines how closely the returned results must match the supplied name.
+  
+    <div style="padding: 1em; background-color: #fafafa; display: flex; align-items: center; border-radius: 0.5rem;">
+      <span type="post" class="sc-EgOXT hniGzf http-verb post">post</span>
+      <span class="sc-ejfMa-d jgeKJH">/v2/aml-verifications</span>
+    </div>
+  
+    Request example
+
+    ```json
+    {
+        "webhook_url": "{{WEBHOOK_URL}}",
+        "applicant_id": "aplt_01hr4p9j0etqw34wyv2h4ac27k",
+        "search_terms": {
+            "name": "John Doe"
+        },
+        "search_parameters": {
+            "search_profile_id": "search_profile_id_xxxxxxxxx",
+            "fuzziness": 0.3
+        }
+    }
+    ```
+    
+    Response example
+    
+    ```json
+    {
+        "id": "amlv_01hr7269mkxva7msc443jz4jbf",
+        "applicant_id": "aplt_01hr7269ksxqjgqxbh4vaqmry8",
+        "created_on": "2024-03-05T10:22:48.481031Z",
+        "modified_on": "2024-03-05T10:22:49.327277Z",
+        "status": "potential_match",
+        "webhook_url": "https://my.api/events/",
+        "search_terms": {
+            "name": "John Doe"
+        },
+        "monitored": false,
+        "_links": {
+            "self": {
+                "href": "https://api.ubble.ai/api/v2/aml-verifications/amlv_01hr7269mkxva7msc443jz4jbf"
+            }
+        }
+    }
+    ```
+
+    Make a note of the AML verification `id` value in the response. You'll need this to retrieve the detailed results later.
+    
+    ## Verify webhook notification
+    
+    You'll be notified of events that occur during the AML verification process via webhooks. Among other information, the webhooks will contain:
+  
+    - the event `type` - for example, `aml_verification_created`,
+    
+    - the AML verification `status` - for example, `created` or `potential_match`.
+    
+    Example
+    
+    ```json
+    {
+      "specversion": "2.0",
+      "type": "aml_verification_created",
+      "subject": "amlv_01hr7269mkxva7msc443jz4jbf",
+      "id": "evnt_01hr7269ry3g8skc630q4ec75g",
+      "time": "2024-03-05T10:22:48Z",
+      "datacontenttype": "application/json",
+      "data": {
+        "aml_verification_id": "amlv_01hr7269mkxva7msc443jz4jbf",
+        "status": "created",
+        "applicant_id": "aplt_01hr7269ksxqjgqxbh4vaqmry8"
+      }
+    }
+    ```
+    
+    When the AML verification is completed, you will receive a webhook notification with the event `type` field set to `aml_verification_completed`, and the body will include the `status` of the AML verification. See the section below.
+    
+    ## Handle AML verification results
+    
+    The webhooks also return the current `status` of the AML verification. The follow-up action you should take depends on the `status` value returned:
+    
+    
+    | <div style="width:12em">Status</div>     | Description                                                                                             | Recommended action                    |
+    |------------------------------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------|
+    | `created`                                | The AML verification has been created but is not yet initiated.                                         | Wait for a change in `status`.        |
+    | `no_match`                               | The AML verification is completed and no match has been found or all matches has been manually denied.  | Accept the applicant’s request.       |
+    | `potential_match`                        | The AML verification is completed and there are some possible matches to investigate.                   | Manually investigate the results.     |
+    | `confirmed_match`                        | At least one match has been manually confirmed.                                                         | Refuse the applicant’s request.       |
+    
+    
+    You can also get this status by calling the following endpoint with the unique `id` returned in the create AML verification response:
+    
+    <div style="padding: 1em; background-color: #fafafa; display: flex; align-items: center; border-radius: 0.5rem;">
+      <span type="get" class="sc-EgOXT dzbTKB http-verb get">get</span>
+      <span class="sc-ejfMa-d jgeKJH">/v2/aml-verifications/{aml_verification_id}</span>
+    </div>
+    
+    Response example
+    
+    ```json
+    {
+        "id": "amlv_01hr7269mkxva7msc443jz4jbf",
+        "applicant_id": "aplt_01hr7269ksxqjgqxbh4vaqmry8",
+        "created_on": "2024-03-05T10:22:48.481031Z",
+        "modified_on": "2024-03-05T10:22:49.327277Z",
+        "status": "potential_match",
+        "webhook_url": "https://my.api/events/",
+        "search_terms": {
+            "name": "John Doe"
+        },
+        "monitored": false,
+        "_links": {
+            "self": {
+                "href": "https://myweb.site/?query-param=hello"
+            }
+        }
+    }
+    ```
+    
+    ## Manually investigate the results
+    
+    If the `status` is `potential_match` you might want to investigate the hits and determine if the applicant can access your service or not. 
+
+    You can do it via the ComplyAdvantage case management tool. You will be able to:
+      
+    - `change` the status of a hit,
+      
+    - `whitelist` an entity to prevent further alerts,
+      
+    - `change` the status of the verification.
+      
+    You will be notified if you change the status of an AML verification. The event `type` field will be set to `aml_verification_status_changed` and the body will include the new `status`.
+      
+    Example
+    
+    ```json
+    {
+      "specversion": "2.0",
+      "type": "aml_verification_monitoring_started",
+      "subject": "amlv_01hr7269mkxva7msc443jz4jbf",
+      "id": "evnt_01hr7269ry3g8skc630q4ec75g",
+      "time": "2024-03-05T10:22:48Z",
+      "datacontenttype": "application/json",
+      "data": {
+        "status": potential_match,
+      }
+    }
+    ```
+
+    ## Monitor a search
+    
+    To monitor a search and be notified of each change, you can call the following endpoint. You can also define the value `monitored` at `true` when creating the verification. 
+    
+    You will be notified if you change this value. The event `type` field will be set to `aml_verification_monitoring_started` or `aml_verification_monitoring_ended` and the body will include the new value.
+    
+    Moreover you will also be notified if the `status` of a monitored verification change. In this case you will receive an event `aml_verification_results_updated` and the body will include the new `status`.
+    
+    <div style="padding: 1em; background-color: #fafafa; display: flex; align-items: center; border-radius: 0.5rem;">
+      <span type="patch" class="sc-EgOXT iZPtNF http-verb patch">patch</span>
+      <span class="sc-ejfMa-d jgeKJH">/v2/aml-verifications/{aml_verification_id}</span>
+    </div>
+    
+    Request example
+    
+    ```json
+    {
+      "monitored": false
+    }
+    ```
+    
+    Response example
+    
+    ```json
+    {
+        "id": "amlv_01hr7269mkxva7msc443jz4jbf",
+        "applicant_id": "aplt_01hr7269ksxqjgqxbh4vaqmry8",
+        "created_on": "2024-03-05T10:22:48.481031Z",
+        "modified_on": "2024-03-05T10:22:49.327277Z",
+        "status": "potential_match",
+        "webhook_url": "https://my.api/events/",
+        "search_terms": {
+            "name": "John Doe"
+        },
+        "monitored": false,
+        "_links": {
+            "self": {
+                "href": "https://myweb.site/?query-param=hello"
+            }
+        }
+    }
+    ```
+    
+    You can then use the ComplyAdvantage case management tool to manually investigate the results.
+  
+    ## List of events
+    
+    | <div style="width:12em">Events</div>                      | Description                                                                                  |
+    |-----------------------------------------------------------|----------------------------------------------------------------------------------------------|
+    | `aml_verification_created`                                | the AML verification has been created                                                        |
+    | `aml_verification_completed`                              | the AML verification has been completed, results are available in the case management tool   |
+    | `aml_verification_status_changed`                         | the `status` of the AML verification has been manually changed                               |
+    | `aml_verification_monitoring_started`                     | the `monitored` value of the verification has been set to true                               |
+    | `aml_verification_monitoring_ended`                       | the `monitored` value of the verification has been set to false                              |
+    | `aml_verification_status_updated`                         | the result of a monitored verification has changed                                          |
 
     # Applicants
 
@@ -1458,7 +1686,7 @@ info:
   version: 2.0.0
 
 servers:
-  - url: https://api.ubble.ai/v2/
+  - url: https://api.ubble.ai/
 
 tags:
   - name: identity verifications
@@ -2398,6 +2626,8 @@ components:
               $ref: "#/components/schemas/PreSignedUrl"
             back_image_signed_url:
               $ref: "#/components/schemas/PreSignedUrl"
+            signature_image_signed_url:
+              $ref: "#/components/schemas/PreSignedUrl"
 
     Identity:
       type: object
@@ -2578,10 +2808,10 @@ components:
       type: string
       description: Type of document.
       enum:
-        - driving license
+        - Driving license
         - ID
-        - passport
-        - residence permit
+        - Passport
+        - Residence Permit
 
     VerificationStatuses:
       type: string
@@ -2806,7 +3036,6 @@ components:
         - full_name
         - last_name
         - last_name_at_birth
-        - nationality
 
     GenderA47Enum:
       enum:

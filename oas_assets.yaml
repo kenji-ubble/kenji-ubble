@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: Asset Management API
+  version: 1.0.0
+  description: API to manage assets, their storage locations, and generate signed URLs.
+paths:
+  /assets/{assetKey}:
+    get:
+      summary: Retrieve an asset
+      description: Retrieve details of an asset by its key.
+      parameters:
+        - name: assetKey
+          in: path
+          required: true
+          description: The key of the asset to retrieve.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Asset details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: Unique identifier for the asset.
+                  hash_sha256:
+                    type: string
+                    description: SHA-256 hash of the asset.
+        404:
+          description: Asset not found.
+
+  /assets/{assetKey}/storages:
+    get:
+      summary: Retrieve storage locations of an asset
+      description: Get all storage locations where an asset is stored.
+      parameters:
+        - name: assetKey
+          in: path
+          required: true
+          description: The key of the asset whose storage locations are to be retrieved.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Storage locations retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    bucket_name:
+                      type: string
+                      description: Name of the storage bucket.
+                    internal_url:
+                      type: string
+                      description: Internal URL of the storage location.
+                    external_url:
+                      type: string
+                      description: External URL of the storage location.
+                    name:
+                      type: string
+                      description: Name of the storage location.
+        404:
+          description: Asset or storage locations not found.
+
+  /assets/{assetKey}/storages/{storageId}/signed-url:
+    post:
+      summary: Create a signed URL for a storage asset
+      description: Generate a signed URL for accessing a specific storage asset.
+      parameters:
+        - name: assetKey
+          in: path
+          required: true
+          description: The key of the asset.
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          required: true
+          description: The ID of the storage location.
+          schema:
+            type: string
+      requestBody:
+        description: Details for generating the signed URL.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expiration:
+                  type: integer
+                  description: Expiration time for the signed URL in seconds.
+                  example: 3600
+      responses:
+        201:
+          description: Signed URL created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signed_url:
+                    type: string
+                    description: The generated signed URL.
+        404:
+          description: Asset or storage location not found.
+        400:
+          description: Invalid request data.
